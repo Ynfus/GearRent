@@ -1,17 +1,10 @@
 ﻿@model GearRent.Models.Reservation
 
 @{
-    Layout = null;
+    ViewData["Title"] = "Edit";
 }
 
-<!DOCTYPE html>
-
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Edit</title>
-</head>
-<body>
+<h1>Edit</h1>
 
 <h4>Reservation</h4>
 <hr />
@@ -56,5 +49,6 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
-</body>
-</html>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
