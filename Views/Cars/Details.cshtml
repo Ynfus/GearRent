@@ -1,17 +1,10 @@
 ﻿@model GearRent.Models.Car
 
 @{
-    Layout = null;
+    ViewData["Title"] = "Details";
 }
 
-<!DOCTYPE html>
-
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Details</title>
-</head>
-<body>
+<h1>Details</h1>
 
 <div>
     <h4>Car</h4>
@@ -59,11 +52,15 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Available)
         </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.PhotoLink)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PhotoLink)
+        </dd>
     </dl>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
-</body>
-</html>

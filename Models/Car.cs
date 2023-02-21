@@ -10,6 +10,7 @@
         public int NumberOfSeats { get; set; }
         public float EngineSize { get; set; }
         public bool Available { get; set; }
+        public string PhotoLink { get; set; }
         public ICollection<Reservation> Reservations { get; set; }
     }
 }
