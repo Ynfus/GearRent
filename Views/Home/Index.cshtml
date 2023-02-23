@@ -2,7 +2,56 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+@*<div class="container-fluid">
+    <div class="row justify-content-center flex-wrap">
+        <div class="col-lg-4 col-md-6 col-sm-12 d-flex justify-content-center" style="flex-basis: 50%; margin-top: 10px;">
+            <div class="rectangle bg-image" data-image="/luxuryCar.jpg">Kategoria 3</div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12 d-flex justify-content-center" style="flex-basis: 50%; margin-top: 10px;">
+            <div class="rectangle bg-image" data-image="/economicCar.jpg">Kategoria 4</div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12 d-flex justify-content-center" style="flex-basis: 50%; margin-top: 10px;">
+            <div class="rectangle bg-image" data-image="/sportCar.jpg">Kategoria 5</div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12 d-flex justify-content-center" style="flex-basis: 50%; margin-top: 10px;">
+            <div class="rectangle bg-image" data-image="/comfortableCar.jpg">Kategoria 6</div>
+        </div>
+    </div>
+</div>*@
+<div class="container-fluid">
+    <div class="row justify-content-center flex-wrap">
+        <div class="col-lg-4 col-md-6 col-sm-12 d-flex justify-content-center" onclick="window.location.href='/kontakt'" style="flex-basis: 50%; margin-top: 10px;">
+            <div class="rectangle bg-image bg-image-index" data-image="/luxuryCar.jpg">
+                <h3>Kategoria 3</h3>
+                <p>Opis kategorii 3</p>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12 d-flex justify-content-center" style="flex-basis: 50%; margin-top: 10px;">
+            <div class="rectangle bg-image bg-image-index" data-image="/economicCar.jpg">
+                <h3>Kategoria 4</h3>
+                <p>Opis kategorii 4</p>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12 d-flex justify-content-center" style="flex-basis: 50%; margin-top: 10px;">
+            <div class="rectangle bg-image bg-image-index" data-image="/sportCar.jpg">
+                <h3>Kategoria 5</h3>
+                <p>Opis kategorii 5</p>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-sm-12 d-flex justify-content-center" style="flex-basis: 50%; margin-top: 10px;">
+            <div class="rectangle bg-image bg-image-index" data-image="/comfortableCar.jpg">
+                <h3>Kategoria 6</h3>
+                <p>Opis kategorii 6</p>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+    const bgImages = document.querySelectorAll('.bg-image');
+
+    bgImages.forEach(bgImage => {
+        const imageUrl = bgImage.getAttribute('data-image');
+        bgImage.style.backgroundImage = `url('${imageUrl}')`;
+    });
+</script>

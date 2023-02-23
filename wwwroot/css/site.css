@@ -20,49 +20,6 @@ html {
 body {
   margin-bottom: 60px;
 }
-/*.car-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-}
-
-.car-item {
-    width: 100%;
-    margin-bottom: 20px;
-}
-
-.card {
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 10px;
-    text-align: center;
-    width: 100%;
-}
-
-.card-img-top {
-    max-width: 100%;
-    height: auto;
-    margin-bottom: 10px;
-}
-
-.card-body {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-}
-
-.card-title {
-    margin-top: 0;
-    font-size: 1.25rem;
-}
-
-.card-text {
-    margin-bottom: 0;
-}
-
-*/
 
 
 .car-grid {
@@ -105,3 +62,31 @@ body {
         margin-top: auto;
         width: 100%;
     }
+.rectangle {
+    width: 100vh;
+    height: 50vh;
+    border-radius: 10px;
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    overflow: hidden; 
+    cursor:pointer;
+}
+
+.bg-image {
+    background: none;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    max-width: 100%;
+    filter: brightness(80%);
+    transition: filter 0.5s;
+}
+.bg-image-index:hover {
+    filter: brightness(50%);
+    transform: scale(1.1);
+    transition: transform 0.5s ease-out;
+}
