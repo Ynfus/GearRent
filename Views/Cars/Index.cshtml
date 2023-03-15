@@ -1,24 +1,194 @@
-﻿@model IEnumerable<GearRent.Models.Car>
+﻿@using GearRent.PaginatedList;
+@model PaginatedList<GearRent.Models.Car>
 
 @{
     ViewData["Title"] = "Index";
 }
 
 
-<div class="container">
+@*<div class="container">
     <div class="row car-grid">
         @foreach (var car in Model)
         {
-                <div class="col-sm-6 col-md-4 col-lg-3 car-item" >
-                    <img src="@car.PhotoLink"/>
-                    <div class="car-details">
-                        <h5 >@car.Make @car.Model</h5>
-                        <p>@car.Year</p>
-                        <div>
-                            <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="btn btn-primary">Szczegóły</a>
-                        </div>
+            <div class="col-sm-6 col-md-4 col-lg-3 car-item">
+                <img src="@car.PhotoLink" />
+                <div class="car-details">
+                    <h5>@car.Make @car.Model</h5>
+                    <p>@car.Year</p>
+                    <div>
+                        <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="btn btn-primary">Szczegóły</a>
                     </div>
                 </div>
+            </div>
         }
     </div>
+</div>*@
+
+@*// ///////////////////////
+*@
+@*<form method="get">
+    <label for="startDate">Start date:</label>
+    <input type="date" name="startDate" id="startDate">
+
+    <label for="endDate">End date:</label>
+    <input type="date" name="endDate" id="endDate">
+
+    <label for="selectedCarTag">Car Tag:</label>
+    <select name="selectedCarTag" id="selectedCarTag">
+        <option value="">All</option>
+        @foreach (var carTag in Enum.GetValues(typeof(CarTag)))
+        {
+            <option value="@carTag">@carTag</option>
+        }
+    </select>
+    <select name="selectedColor" id="selectedColor">
+        <option value="">All</option>
+        @foreach (var color in ViewBag.Colors)
+        {
+            <option value="@color">@color</option>
+        }
+    </select>
+    <button type="submit">Filter</button>
+</form>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.ActionLink("Price", "Index", new { sortOrder = ViewBag.PriceSortParm })
+        </th>
+
+        <th>
+            @Html.ActionLink("Make", "Index", new { sortOrder = ViewBag.NameSortParm })
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var car in Model)
+    {
+        <div class="col-sm-6 col-md-4 col-lg-3 car-item">
+
+            <img src="@car.PhotoLink" />
+            <div class="car-details">
+                <h5>@car.Make @car.Model</h5>
+                <p>@car.Year</p>
+                <div>
+                    <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="btn btn-primary">Szczegóły</a>
+                </div>
+            </div>
+        </div>
+    }
+</table>
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @prevDisabled">
+    Previous
+</a>
+<a asp-action="Index"
+   asp-route-sortOrder="@ViewData["CurrentSort"]"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+   class="btn btn-default @nextDisabled">
+    Next
+</a>*@
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-3 mt-4 d-flex justify-content-left">
+            <form method="get">
+                <div class="form-group">
+                    <label for="startDate">Start date:</label>
+                    <input type="date" class="form-control" name="startDate" id="startDate">
+                </div>
+
+                <div class="form-group">
+                    <label for="endDate">End date:</label>
+                    <input type="date" class="form-control" name="endDate" id="endDate">
+                </div>
+
+                <div class="form-group">
+                    <label for="selectedCarTag">Car Tag:</label>
+                    <select class="form-control" name="selectedCarTag" id="selectedCarTag">
+                        <option value="">All</option>
+                        @foreach (var carTag in Enum.GetValues(typeof(CarTag)))
+                        {
+                            <option value="@carTag">@carTag</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="selectedColor">Color:</label>
+                    <select class="form-control" name="selectedColor" id="selectedColor">
+                        <option value="">All</option>
+                        @foreach (var color in ViewBag.Colors)
+                        {
+                            <option value="@color">@color</option>
+                        }
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-2">Filter</button>
+            </form>
+        </div>
+
+        <div class="col-lg-9 mt-2">
+            @foreach (var car in Model)
+            {
+                <div class="row row-car mb-4">
+                    <div class="col-md-5">
+                        <img src="@car.PhotoLink" class="img-fluid car-image col-md-5" alt="@car.Make @car.Model">
+                    </div>
+                    <div class="col-md-7">
+                        <h5 class="card-title">@car.Make @car.Model</h5>
+                        <p class="card-text">Price: @car.Price</p>
+                        <a href="@Url.Action("Create", "Reservations", new { carId = car.Id, startDate = "" })" id="order-link" class="btn btn-primary">Order</a>
+                    </div>
+                </div>
+            }
+            @{
+                var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+                var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+            }
+            <div class="d-flex justify-content-between">
+                <a asp-action="Index"
+                   asp-route-sortOrder="@ViewData["CurrentSort"]"
+                   asp-route-pageNumber="@(Model.PageIndex - 1)"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   class="btn btn-default @prevDisabled">
+                    Previous
+                </a>
+
+                <a asp-action="Index"
+                   asp-route-sortOrder="@ViewData["CurrentSort"]"
+                   asp-route-pageNumber="@(Model.PageIndex + 1)"
+                   asp-route-currentFilter="@ViewData["CurrentFilter"]"
+                   class="btn btn-default @nextDisabled">
+                    Next
+                </a>
+
+            </div>
+        </div>
+    </div>
 </div>
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const startDate = urlParams.get('startDate');
+    const endDate = urlParams.get('endDate');
+
+    document.getElementById("startDate").value = startDate;
+    document.getElementById("endDate").value = endDate;
+
+        document.getElementById("order-link").href = '@Url.Action("Create", "Reservations", new { carId = car.Id, startDate = "" })'.replace("startDate = \"\"", "startDate=" + encodeURIComponent(startDate));
+</script>
+
+
+
+
