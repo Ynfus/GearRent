@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GearRent.Data;
 using GearRent.Models;
+using Azure;
+using GearRent.PaginatedList;
 
 namespace GearRent.Controllers
 {
@@ -14,18 +16,64 @@ namespace GearRent.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-        public CarsController(ApplicationDbContext context)
+        public CarsController(ApplicationDbContext context )
         {
             _context = context;
         }
 
-        // GET: Cars
-        public async Task<IActionResult> Index()
+        //GET: Cars
+        //public async Task<IActionResult> Index()
+        //{
+        //    return _context.Cars != null ?
+        //                View(await _context.Cars.ToListAsync()) :
+        //                Problem("Entity set 'ApplicationDbContext.Cars'  is null.");
+
+        //}
+        public async Task<IActionResult> Index(string sortOrder, DateTime? startDate, DateTime? endDate, int? pageNumber, CarTag? selectedCarTag, string? selectedColor)
         {
-              return _context.Cars != null ? 
-                          View(await _context.Cars.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Cars'  is null.");
+            ViewBag.PriceSortParm = String.IsNullOrEmpty(sortOrder) ? "price_desc" : "";
+            ViewBag.NameSortParm = sortOrder == "name" ? "name_desc" : "name";
+            var cars = from c in _context.Cars
+                       select c;
+            ViewBag.CarTags = Enum.GetValues(typeof(CarTag));
+
+            var colors = _context.Cars.Select(c => c.Color).Distinct().ToList();
+            ViewBag.Colors = colors;
+
+            if (startDate != null && endDate != null)
+            {
+                cars = cars.Where(c => c.Reservations.All(r => r.EndDate < startDate || r.StartDate > endDate));
+            }
+            if (!string.IsNullOrEmpty(selectedColor))
+            {
+                cars = cars.Where(c => c.Color == selectedColor);
+            }
+            if (selectedCarTag.HasValue)
+            {
+                var tag = selectedCarTag;
+                cars = cars.Where(c => c.Tag == tag);
+            }
+            switch (sortOrder)
+            {
+                case "price_desc":
+                    cars = cars.OrderByDescending(c => c.Price);
+                    break;
+                case "name":
+                    cars = cars.OrderBy(c => c.Make);
+                    break;
+                case "name_desc":
+                    cars = cars.OrderByDescending(c => c.Make);
+                    break;
+                default:
+                    cars = cars.OrderBy(c => c.Price);
+                    break;
+            }
+            int pageSize = 3;
+            return View(await PaginatedList<Car>.CreateAsync(cars.AsNoTracking(), pageNumber ?? 1, pageSize));
+            //return View(cars.ToList());
         }
+
+
 
         // GET: Cars/Details/5
         public async Task<IActionResult> Details(int? id)
