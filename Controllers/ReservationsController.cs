@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GearRent.Data;
 using GearRent.Models;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
+using System.Diagnostics;
 
 namespace GearRent.Controllers
 {
@@ -47,10 +50,13 @@ namespace GearRent.Controllers
         }
 
         // GET: Reservations/Create
-        public IActionResult Create()
+        public IActionResult Create(int carId, string startDate)
         {
-            ViewData["CarId"] = new SelectList(_context.Cars, "Id", "Id");
-            ViewData["UserId"] = new SelectList(_context.Set<ApplicationUser>(), "Id", "Id");
+            string userId = HttpContext.User.Identity.IsAuthenticated ? HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value : null;
+            ViewData["CarId"] = carId;
+            Debug.WriteLine(carId);
+            System.Diagnostics.Debug.WriteLine(startDate + "  "+carId);
+            ViewData["UserId"] = userId;
             return View();
         }
 
