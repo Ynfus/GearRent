@@ -54,6 +54,7 @@ namespace GearRent.Controllers
         {
             string userId = HttpContext.User.Identity.IsAuthenticated ? HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value : null;
             ViewData["CarId"] = carId;
+            ViewData["StartDate"] = startDate;
             Debug.WriteLine(carId);
             System.Diagnostics.Debug.WriteLine(startDate + "  "+carId);
             ViewData["UserId"] = userId;
