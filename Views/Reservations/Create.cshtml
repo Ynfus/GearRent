@@ -21,14 +21,14 @@
                 <input type="text" class="form-control" id="carId" name="carId" value="@ViewData["CarId"]" readonly>
             </div>
             <div class="form-group">
-                <label asp-for="StartDate" class="control-label"></label>
-                <input asp-for="StartDate" class="form-control" value="@ViewData["StartDate"]" readonly />
+                <label  class="control-label"></label>
+                <input  class="form-control" value="@ViewData["StartDate"]" readonly />
                 <span asp-validation-for="StartDate" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="EndDate" class="control-label"></label>
-                <input asp-for="EndDate" class="form-control" />
+                <label class="control-label"></label>
+                <input class="form-control" value="@ViewData["EndDate"]" readonly />
                 <span asp-validation-for="EndDate" class="text-danger"></span>
             </div>
             <div class="form-group">
