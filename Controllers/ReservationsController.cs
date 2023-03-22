@@ -10,6 +10,7 @@ using GearRent.Models;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using System.Diagnostics;
+using Newtonsoft.Json.Linq;
 
 namespace GearRent.Controllers
 {
@@ -50,13 +51,18 @@ namespace GearRent.Controllers
         }
 
         // GET: Reservations/Create
-        public IActionResult Create(int carId, string startDate)
+        public IActionResult Create(int carId, string startDate, string endDate)
         {
+
             string userId = HttpContext.User.Identity.IsAuthenticated ? HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value : null;
+            if (userId == null)
+            {
+                return Redirect("/Identity/Account/Login");
+            }
             ViewData["CarId"] = carId;
             ViewData["StartDate"] = startDate;
-            Debug.WriteLine(carId);
-            System.Diagnostics.Debug.WriteLine(startDate + "  "+carId);
+            ViewData["EndDate"] = endDate;
+
             ViewData["UserId"] = userId;
             return View();
         }
