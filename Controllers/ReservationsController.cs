@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using System.Diagnostics;
 using Newtonsoft.Json.Linq;
+using Humanizer;
+using System.Globalization;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace GearRent.Controllers
 {
@@ -61,8 +64,8 @@ namespace GearRent.Controllers
             }
             ViewData["CarId"] = carId;
             ViewData["StartDate"] = startDate;
+            //DateTime endDateTime = DateTime.Parse(endDate);
             ViewData["EndDate"] = endDate;
-
             ViewData["UserId"] = userId;
             return View();
         }
@@ -74,12 +77,15 @@ namespace GearRent.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,UserId,CarId,StartDate,EndDate,Status")] Reservation reservation)
         {
+            Debug.Write(reservation.EndDate );
             if (ModelState.IsValid)
             {
                 _context.Add(reservation);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
+
             ViewData["CarId"] = new SelectList(_context.Cars, "Id", "Id", reservation.CarId);
             ViewData["UserId"] = new SelectList(_context.Set<ApplicationUser>(), "Id", "Id", reservation.UserId);
             return View(reservation);
@@ -174,14 +180,14 @@ namespace GearRent.Controllers
             {
                 _context.Reservations.Remove(reservation);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ReservationExists(int id)
         {
-          return (_context.Reservations?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Reservations?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
