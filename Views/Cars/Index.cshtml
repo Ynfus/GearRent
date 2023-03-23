@@ -196,7 +196,6 @@
         const minEndDate = nextDay.toISOString().slice(0, 10);
         endDateInput.min = minEndDate;
 
-        // Check if end date is earlier than start date
         const endDateValue = new Date(endDateInput.value);
         if (endDateValue < startDateValue) {
             endDateInput.value = minEndDate;
