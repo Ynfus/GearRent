@@ -1,4 +1,6 @@
-﻿@*
+﻿@model GearRent.Models.Reservation
+
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
@@ -11,7 +13,7 @@
                 <div class="card-body text-center">
                     <h1 class="card-title">Dziękujemy za wypożyczenie samochodu</h1>
 @*                    <img src="" alt="Samochód" class="img-fluid rounded" />
-*@                    <p class="card-text">Wypożyczyłeś samochód o marce , model , na okres od  do .</p>
+                    *@                    <p class="card-text">Wypożyczyłeś samochód marki @ViewBag.Car.Make  @ViewBag.Car.Model , na okres od @Model.StartDate.ToShortDateString() do @Model.EndDate.ToShortDateString()</p>
                     <p class="card-text">Życzymy miłego użytkowania i bezpiecznej jazdy!</p>
                 </div>
             </div>
