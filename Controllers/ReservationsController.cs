@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using System.Diagnostics;
 using Newtonsoft.Json.Linq;
-using Humanizer;
 using System.Globalization;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
@@ -77,18 +76,18 @@ namespace GearRent.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,UserId,CarId,StartDate,EndDate,Status")] Reservation reservation)
         {
-            Debug.Write(reservation.EndDate );
-            if (ModelState.IsValid)
-            {
-                _context.Add(reservation);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
+            Car car = await _context.Cars.FindAsync(reservation.CarId);
+            Debug.Write(reservation.EndDate);
+            reservation.Car = car;
+            _context.Add(reservation);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Thanks), reservation);
 
 
-            ViewData["CarId"] = new SelectList(_context.Cars, "Id", "Id", reservation.CarId);
-            ViewData["UserId"] = new SelectList(_context.Set<ApplicationUser>(), "Id", "Id", reservation.UserId);
-            return View(reservation);
+
+            //ViewData["CarId"] = new SelectList(_context.Cars, "Id", "Id", reservation.CarId);
+            //ViewData["UserId"] = new SelectList(_context.Set<ApplicationUser>(), "Id", "Id", reservation.UserId);
+            //return View(reservation);
         }
 
         // GET: Reservations/Edit/5
@@ -112,12 +111,14 @@ namespace GearRent.Controllers
 
 
 
-        public ActionResult Thanks( )
+        public async Task<IActionResult> Thanks(Reservation reservation)
         {
 
-                // Przekaż model do widoku i wyświetl stronę
-                return View();
-            
+           Car car = await _context.Cars.FindAsync(reservation.CarId);
+            ViewBag.Car = car;
+            // Przekaż model do widoku i wyświetl stronę
+            return View(reservation);
+
         }
 
 
