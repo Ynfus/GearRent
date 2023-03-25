@@ -14,26 +14,25 @@ namespace GearRent.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ApplicationDbContext _context;
-        public HistoryModel(ApplicationDbContext context,UserManager<IdentityUser> userManager,
-        SignInManager<IdentityUser> signInManager)
+
+        public HistoryModel(ApplicationDbContext context, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
         {
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
         }
-        public List<Reservation> reservations { get; set; }
+
+        public List<Reservation> Reservations { get; set; }
+
         private async Task LoadAsync(IdentityUser user)
         {
-            var userName = await _context.Reservations.FindAsync(user);
-            var reservation = await _context.Reservations.Where(r => r.CarId == 1).ToListAsync(); 
-
+            Reservations = await _context.Reservations.Where(r => r.UserId == user.Id).ToListAsync();
         }
 
         public async Task<IActionResult> OnGetAsync()
         {
-
             var user = await _userManager.GetUserAsync(User);
-            Debug.Write(user);
+            Debug.Write(user.Id.GetType());
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
@@ -42,7 +41,5 @@ namespace GearRent.Areas.Identity.Pages.Account.Manage
             await LoadAsync(user);
             return Page();
         }
-
-     
     }
 }
