@@ -163,14 +163,15 @@ namespace GearRent.Controllers
         // GET: Reservations/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            Debug.Write(id+"eeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
             if (id == null || _context.Reservations == null)
             {
                 return NotFound();
             }
 
             var reservation = await _context.Reservations
-                .Include(r => r.Car)
-                .Include(r => r.User)
+                //.Include(r => r.Car)
+                //.Include(r => r.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (reservation == null)
             {

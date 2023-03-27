@@ -1,5 +1,7 @@
 ﻿using GearRent.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 using System.Diagnostics;
 
 namespace GearRent.Controllers
@@ -15,6 +17,7 @@ namespace GearRent.Controllers
 
         public IActionResult Index()
         {
+
             return View();
         }
 

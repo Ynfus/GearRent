@@ -41,5 +41,6 @@ namespace GearRent.Areas.Identity.Pages.Account.Manage
             await LoadAsync(user);
             return Page();
         }
+
     }
 }
