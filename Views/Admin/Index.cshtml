@@ -1,29 +1,95 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿
+@using GearRent.PaginatedList;
+@model PaginatedList<GearRent.Models.Reservation>
 @{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+
+    ViewBag.Title = "Profile";
+    ViewBag.ControllerName = "Admin";
+    ViewBag.ActionName = "Index";
+
+
 }
-<h1 class="mt-2">Manage your account</h1>
 
-<div>
-    <h2>Change your account settings</h2>
-    <hr />
-    <div class="row">
-        <div class="col-md-3">
-            <ul class="nav nav-pills flex-column">
-                <li class="nav-item"><a class="nav-link">Profile</a></li>
-                <li class="nav-item"><a class="nav-link">Email</a></li>
-                <li class="nav-item"><a class="nav-link">Password</a></li>
 
-                <li class="nav-item"><a class="nav-link">Two-factor authentication</a></li>
-                <li class="nav-item"><a class="nav-link">Personal data</a></li>
-                <li class="nav-item"><a class="nav-link">Rent history</a></li>
-            </ul>
+<h2>Upcoming Bookings</h2>
 
-        </div>
-        <div class="col-md-9">
-            @*@RenderBody()*@
 
-        </div>
-    </div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Reservation ID</th>
+            <th>User</th>
+            <th>Car</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+        </tr>
+    </thead>
+    <tbody>
+
+            @foreach (var reservation in Model)
+            {
+                <tr>
+                    <td>@reservation.Id</td>
+@*                    <td>@reservation.User.UserName</td>*@
+                    <td>@reservation.Car.Make @reservation.Car.Model</td>
+                    <td>@reservation.StartDate.ToShortDateString()</td>
+                    <td>@reservation.EndDate.ToShortDateString()</td>
+                </tr>
+            }   
+    </tbody>
+</table>
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+<div class="d-flex justify-content-between">
+    <a asp-action="Index"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex - 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-default @prevDisabled">
+        Previous
+    </a>
+
+    <a asp-action="Index"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex + 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-default @nextDisabled">
+        Next
+    </a>
+
 </div>
+
+@*
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Reservation ID</th>
+                <th>User</th>
+                <th>Car</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var reservation in Model)
+            {
+                <tr>
+                    <td>@reservation.Id</td>
+                    <td>@reservation.User.UserName</td>
+                    <td>@reservation.Car.Make @reservation.Car.Model</td>
+                    <td>@reservation.StartDate.ToShortDateString()</td>
+                    <td>@reservation.EndDate.ToShortDateString()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No upcoming bookings found.</p>
+}*@
