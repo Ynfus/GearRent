@@ -13,6 +13,10 @@ using System.Diagnostics;
 using Newtonsoft.Json.Linq;
 using System.Globalization;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Stripe;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Cors;
+using Stripe.Checkout;
 
 namespace GearRent.Controllers
 {
@@ -81,7 +85,7 @@ namespace GearRent.Controllers
             reservation.Car = car;
             _context.Add(reservation);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Thanks), reservation);
+            return RedirectToAction(nameof(ProcessPayment), reservation);
 
 
 
@@ -121,6 +125,41 @@ namespace GearRent.Controllers
 
         }
 
+
+
+        /// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        [DisableCors]
+        [HttpPost]
+        public ActionResult ProcessPayment(Reservation reservation)
+        {
+            StripeConfiguration.ApiKey = "";
+            try
+            {
+
+
+                var options = new ChargeCreateOptions
+                {
+                    Amount = 2000,
+                    Currency = "pln",
+                    Source = "tok_visa",
+                    Description = "no elo elo",
+                };
+                var service = new ChargeService();
+                var charge = service.Create(options);
+
+                return View("Success");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = ex.Message;
+                return View("Error");
+            }
+        }
+        /// ///////////////////////////////////
+
+
+
+        /// ///////////////////////////////////////////////////////////////////////////////////////
 
 
         // POST: Reservations/Edit/5

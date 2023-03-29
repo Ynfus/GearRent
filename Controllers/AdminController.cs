@@ -49,7 +49,7 @@ namespace GearRent.Controllers
         {
             var upcomingReservations = from r in _context.Reservations
                                        select r;
-            var currentDate = DateTime.Now;
+            var currentDate = DateTime.Now.AddDays(-10);
             upcomingReservations = upcomingReservations
                 .Where(r => r.StartDate > currentDate /*&& r.Status == ReservationStatus.Approved*/)
                 .Include(r => r.Car)
