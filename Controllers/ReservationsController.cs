@@ -36,8 +36,9 @@ namespace GearRent.Controllers
             var applicationDbContext = _context.Reservations.Include(r => r.Car).Include(r => r.User);
             return View(await applicationDbContext.ToListAsync());
         }
-        public async Task<IActionResult> Checkout(string payment_intent, string payment_intent_client_secret, string redirect_status)
+        public async Task<IActionResult> Checkout(string payment_intent, string payment_intent_client_secret, string redirect_status, Reservation reservation)
         {
+            ViewBag.MyValue = reservation.Id;
             return View();
         }
         // GET: Reservations/Details/5
@@ -89,7 +90,7 @@ namespace GearRent.Controllers
             reservation.Car = car;
             _context.Add(reservation);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Thanks), reservation);
+            return RedirectToAction(nameof(Checkout), reservation);
 
 
 
@@ -118,7 +119,21 @@ namespace GearRent.Controllers
 
 
 
+        public async Task<IActionResult> Thanks1(int id)
+        {
+            string userId = HttpContext.User.Identity.IsAuthenticated ? HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value : null;
 
+            var reservation = await _context.Reservations.FindAsync(id);
+            if (reservation.UserId!=userId)
+            {
+                return NotFound();
+            }
+            reservation.Status = ReservationStatus.Approved;
+            await _context.SaveChangesAsync();
+
+            return View();
+
+        }
         public async Task<IActionResult> Thanks(Reservation reservation)
         {
 
