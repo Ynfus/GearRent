@@ -17,6 +17,7 @@ using Stripe;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Cors;
 using Stripe.Checkout;
+using Newtonsoft.Json;
 
 namespace GearRent.Controllers
 {
@@ -35,7 +36,10 @@ namespace GearRent.Controllers
             var applicationDbContext = _context.Reservations.Include(r => r.Car).Include(r => r.User);
             return View(await applicationDbContext.ToListAsync());
         }
-
+        public async Task<IActionResult> Checkout(string payment_intent, string payment_intent_client_secret, string redirect_status)
+        {
+            return View();
+        }
         // GET: Reservations/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -85,7 +89,7 @@ namespace GearRent.Controllers
             reservation.Car = car;
             _context.Add(reservation);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(ProcessPayment), reservation);
+            return RedirectToAction(nameof(Thanks), reservation);
 
 
 
@@ -128,44 +132,44 @@ namespace GearRent.Controllers
 
 
         /// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        [DisableCors]
-        [HttpPost]
-        public ActionResult ProcessPayment(Reservation reservation)
-        {
-            StripeConfiguration.ApiKey = "";
-            try
-            {
+        //[DisableCors]
+        //[HttpPost]
+        //public ActionResult ProcessPayment(Reservation reservation)
+        //{
+        //    StripeConfiguration.ApiKey = "sk_test_51Mqvj3Ea7vPLiBopPCZjU5tY28KQYLyPC2K9sPLhKUsh3w1dq26Xu9qRXDrPNmvFHSXYusKaWChyCNbD8HTwsgUx00qcWXBCjz";
+        //    try
+        //    {
 
 
-                var options = new ChargeCreateOptions
-                {
-                    Amount = 2000,
-                    Currency = "pln",
-                    Source = "tok_visa",
-                    Description = "no elo elo",
-                };
-                var service = new ChargeService();
-                var charge = service.Create(options);
+        //        var options = new ChargeCreateOptions
+        //        {
+        //            Amount = 2000,
+        //            Currency = "pln",
+        //            Source = "tok_visa",
+        //            Description = "no elo elo",
+        //        };
+        //        var service = new ChargeService();
+        //        var charge = service.Create(options);
 
-                return View("Success");
-            }
-            catch (Exception ex)
-            {
-                ViewBag.Error = ex.Message;
-                return View("Error");
-            }
-        }
+        //        return View("Success");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ViewBag.Error = ex.Message;
+        //        return View("Error");
+        //    }
+        //}
         /// ///////////////////////////////////
 
 
 
-        /// ///////////////////////////////////////////////////////////////////////////////////////
+    /// ///////////////////////////////////////////////////////////////////////////////////////
 
 
-        // POST: Reservations/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+    // POST: Reservations/Edit/5
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,CarId,StartDate,EndDate,Status")] Reservation reservation)
         {
