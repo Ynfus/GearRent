@@ -1,9 +1,12 @@
 ﻿// This is your test publishable API key.
 const stripe = Stripe("pk_test_51Mqvj3Ea7vPLiBop4GkibjSosX3ppGnaGN63OPU2yRUHeCiHSAlJXRdQlQrVLRHduwueamrXwAyEZOClP9olbFPC00K6nN2bCS");
 
+var myValue = document.getElementById("myValue").value;
 // The items the customer wants to buy
-const items = [{ id: "xl-tshirt" }];
+const items = [{ id: myValue }, { id: "xl-tshirt" }];
 
+
+console.log(myValue); // outputs "Hello, world!"
 let elements;
 
 initialize();
@@ -85,7 +88,8 @@ async function checkStatus() {
     switch (paymentIntent.status) {
         case "succeeded":
             showMessage("Payment succeeded!");
-            window.location.href = "/reservations/index";
+            localStorage.setItem('reservationId', reservation.id);
+            window.location.href = "/reservations/thanks1?id="+reservation.id;
             break;
         case "processing":
             showMessage("Your payment is processing.");

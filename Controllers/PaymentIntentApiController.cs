@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Stripe;
+using static GearRent.Controllers.PaymentIntentApiController;
 
 namespace GearRent.Controllers
 {
@@ -14,10 +15,11 @@ namespace GearRent.Controllers
         [HttpPost]
         public ActionResult Create(PaymentIntentCreateRequest request)
         {
+            string result = string.Join("", request.Items.Select(item => item.Id));
             var paymentIntentService = new PaymentIntentService();
             var paymentIntent = paymentIntentService.Create(new PaymentIntentCreateOptions
             {
-                Description="reservationid jakieś tam pozdrawiam",
+                Description="Płatność za rezerwacje nr "+result,
                 Amount = CalculateOrderAmount(request.Items),
                 Currency = "pln",
                 AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
