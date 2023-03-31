@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Cors;
 using Stripe.Checkout;
 using Newtonsoft.Json;
+using NuGet.Versioning;
 
 namespace GearRent.Controllers
 {
@@ -131,12 +132,11 @@ namespace GearRent.Controllers
             reservation.Status = ReservationStatus.Approved;
             await _context.SaveChangesAsync();
 
-            return View();
-
+            return RedirectToAction("Thanks", "Reservations", new { id=id });
         }
-        public async Task<IActionResult> Thanks(Reservation reservation)
+        public async Task<IActionResult> Thanks(int id)
         {
-
+            Reservation reservation = await _context.Reservations.FindAsync(id);
            Car car = await _context.Cars.FindAsync(reservation.CarId);
             ViewBag.Car = car;
             // Przekaż model do widoku i wyświetl stronę

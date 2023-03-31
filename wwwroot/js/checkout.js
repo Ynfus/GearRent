@@ -1,9 +1,17 @@
 ﻿// This is your test publishable API key.
 const stripe = Stripe("pk_test_51Mqvj3Ea7vPLiBop4GkibjSosX3ppGnaGN63OPU2yRUHeCiHSAlJXRdQlQrVLRHduwueamrXwAyEZOClP9olbFPC00K6nN2bCS");
 
-var myValue = document.getElementById("myValue").value;
+var reservationId = document.getElementById("myValue").value;
+//if (reservationId > 0) {
+//    // Set the reservationId value in localStorage
+//    localStorage.setItem("reservationId", reservationId);
+//}
+//else if(reservationId == 0)
+//{
+//    var reservationId = localStorage.getItem("reservationId");
+//}
 // The items the customer wants to buy
-const items = [{ id: myValue }, { id: "xl-tshirt" }];
+const items = [{ id: reservationId }];
 
 
 console.log(myValue); // outputs "Hello, world!"
@@ -54,7 +62,7 @@ async function handleSubmit(e) {
         elements,
         confirmParams: {
             // Make sure to change this to your payment completion page
-            return_url: "https://localhost:7121/reservations/checkout",
+            return_url: "https://localhost:7121/reservations/checkout?id="+reservationId,
             receipt_email: emailAddress,
         },
     });
@@ -88,8 +96,7 @@ async function checkStatus() {
     switch (paymentIntent.status) {
         case "succeeded":
             showMessage("Payment succeeded!");
-            localStorage.setItem('reservationId', reservation.id);
-            window.location.href = "/reservations/thanks1?id="+reservation.id;
+            window.location.href = "/reservations/thanks1?id="+reservationId;
             break;
         case "processing":
             showMessage("Your payment is processing.");
