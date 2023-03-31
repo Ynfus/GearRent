@@ -9,10 +9,11 @@
     <link rel="stylesheet" href="~/GearRent.styles.css" asp-append-version="true" />
 </head>
 <body>
+
     <header>
         <div class="bg-image flex"
              style="background-image: url('/car.jpg'); background-size:cover; background-position:center center;
-            height: 70vh">
+            height: 50vh">
             <nav class="navbar navbar-expand-lg navbar-light bg-transparent ms-4">
                 <a class="navbar-brand" href="/home/index">GearRent</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,14 +21,12 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="/home/index">Home <span class="sr-only">(current)</span></a>
-                        </li>
+
                         <li class="nav-item">
                             <a class="nav-link" href="/cars/index">Samochody</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/reservations/create">Zarezerwuj</a>
+                            <a class="nav-link" href="/reservations/create">Kontakt</a>
                         </li>
                         <li class="nav-item">
                             <partial name="_LoginPartial" />
@@ -39,7 +38,8 @@
             </nav>
         </div>
     </header>
-    <div class="container">
+
+    <div class="container-fluid">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
