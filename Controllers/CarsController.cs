@@ -9,6 +9,7 @@ using GearRent.Data;
 using GearRent.Models;
 using Azure;
 using GearRent.PaginatedList;
+using System.Drawing.Printing;
 
 namespace GearRent.Controllers
 {
@@ -22,13 +23,15 @@ namespace GearRent.Controllers
         }
 
         //GET: Cars
-        //public async Task<IActionResult> Index()
-        //{
-        //    return _context.Cars != null ?
-        //                View(await _context.Cars.ToListAsync()) :
-        //                Problem("Entity set 'ApplicationDbContext.Cars'  is null.");
+        public async Task<IActionResult> List(int? pageNumber)
+        {
+            int pageSize = 6;
 
-        //}
+            return _context.Cars != null ?
+                        View(await PaginatedList<Car>.CreateAsync(_context.Cars.AsNoTracking(), pageNumber ?? 1, pageSize)) :
+                        Problem("Entity set 'ApplicationDbContext.Cars'  is null.");
+
+        }
         public async Task<IActionResult> Index(string sortOrder, DateTime? startDate, DateTime? endDate, int? pageNumber, CarTag? selectedCarTag, string? selectedColor)
         {
             ViewBag.PriceSortParm = String.IsNullOrEmpty(sortOrder) ? "price_desc" : "";

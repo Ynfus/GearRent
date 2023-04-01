@@ -1,0 +1,41 @@
+﻿@using GearRent.PaginatedList;
+@model PaginatedList<GearRent.Models.Car>
+
+@{
+    ViewData["Title"] = "List";
+}
+
+
+<div class="container mt-3">
+    <div class="row car-grid">
+        @foreach (var car in Model)
+        {
+            <div class="col-sm-6 col-md-4 col-lg-3 car-item">
+                <img src="@car.PhotoLink" />
+                <div class="car-details">
+                    <h5>@car.Make @car.Model</h5>
+                    <p>@car.Year</p>
+                    <div>
+                        <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="btn btn-primary">Szczegóły</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+<div class="d-flex justify-content-center">
+    <a asp-action="List"
+       asp-route-pageNumber="@(Model.PageIndex - 1)"
+       class="btn btn-default @prevDisabled">
+        Previous
+    </a>
+    <a asp-action="List"
+       asp-route-pageNumber="@(Model.PageIndex + 1)"
+       class="btn btn-default @nextDisabled">
+        Next
+    </a>
+</div>
