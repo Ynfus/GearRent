@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using GearRent.Models;
+using Microsoft.AspNetCore.Mvc;
 using System.Net.Mail;
 
 namespace GearRent.Controllers
@@ -7,10 +8,19 @@ namespace GearRent.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            if (User != null && User.Identity.IsAuthenticated)
+            {
+                var userEmail = User.Identity.Name;
+                var contactViewModel = new ContactViewModel() { Email = userEmail };
+                return View(contactViewModel);
+            }
+            else
+            {
+                return View(new ContactViewModel());
+            }
         }
         [HttpPost]
-        public ActionResult Index(string name, string email, string phone, string message)
+        public ActionResult Index(ContactViewModel contactViewModel)
         {
             //var mail = new MailMessage();
             //mail.From = new MailAddress("");
@@ -27,7 +37,7 @@ namespace GearRent.Controllers
             //smtp.Send(mail);
             TempData["messageSent"] = true;
 
-            return View();
+            return RedirectToAction("Index");
         }
 
     }
