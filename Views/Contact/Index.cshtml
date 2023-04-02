@@ -1,72 +1,56 @@
 ﻿@model ContactViewModel
-<h2 class="text-center mt-2 mb-2">Kontakt</h2>
-<div id="wrapper">
-    <div id="left">
-        <h2>Dane kontaktowe</h2>
-        <p>Adres: ul. Półwiejska 42, 61-888 Poznań</p>
-        <p>Telefon: +48 123 456 789</p>
-        <p>E-mail: info@wypozyczalniasamochodow.pl</p>
-        <p>Godziny otwarcia:</p>
-        <ul>
-            <li>Poniedziałek - piątek: 8:00 - 20:00</li>
-            <li>Sobota: 9:00 - 18:00</li>
-            <li>Niedziela: nieczynne</li>
-        </ul>
+
+<div class="container">
+    <h1 class="text-center mt-5 mb-3">Kontakt</h1>
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Dane kontaktowe</h2>
+            <ul class="list-unstyled">
+                <li><i class="bi bi-geo-alt-fill me-2"></i>ul. Półwiejska 42, 61-888 Poznań</li>
+                <li><i class="bi bi-telephone-fill me-2"></i>+48 123 456 789</li>
+                <li><i class="bi bi-envelope-fill me-2"></i>info@wypozyczalniasamochodow.pl</li>
+            </ul>
+            <h4>Godziny otwarcia:</h4>
+            <ul class="list-unstyled">
+                <li>Poniedziałek - piątek: 8:00 - 20:00</li>
+                <li>Sobota: 9:00 - 18:00</li>
+                <li>Niedziela: nieczynne</li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <h2>Formularz kontaktowy</h2>
+            @using (Html.BeginForm("Index", "Contact", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-floating mb-3">
+                    @Html.TextBoxFor(model => model.Name, new { @class = "form-control", @required = "required", placeholder = " " })
+                    @Html.LabelFor(model => model.Name, new { @class = "form-label" })
+                </div>
+                <div class="form-floating mb-3">
+                    @Html.TextBoxFor(model => model.Email, new { @class = "form-control", @required = "required", @type = "email", placeholder = " " })
+                    @Html.LabelFor(model => model.Email, new { @class = "form-label" })
+                </div>
+                <div class="form-floating mb-3">
+                    @Html.TextBoxFor(model => model.Phone, new { @class = "form-control", placeholder = " " })
+                    @Html.LabelFor(model => model.Phone, new { @class = "form-label" })
+                </div>
+                <div class="form-floating mb-3">
+                    @Html.TextAreaFor(model => model.Message, new { @class = "form-control", @rows = "5", @required = "required", placeholder = " " })
+                    @Html.LabelFor(model => model.Message, new { @class = "form-label" })
+                </div>
+                <button type="submit" class="btn btn-primary mb-3">Wyślij</button>
+            }
+            @if (TempData["messageSent"] != null && (bool)TempData["messageSent"])
+            {
+                <div id="sent-message" class="alert alert-success mt-2">Wiadomość została wysłana!</div>
+                TempData["messageSent"] = null;
+            }
+        </div>
     </div>
-    <div id="right">
-        <h2>Formularz kontaktowy</h2>
-        @using (Html.BeginForm("Index", "Contact", FormMethod.Post))
-        {
-            @Html.AntiForgeryToken()
-
-            <div class="form-group">
-                @Html.LabelFor(model => model.Name)
-                @Html.TextBoxFor(model => model.Name, new { @class = "form-control", @required = "required" })
-            </div>
-            <div class="form-group">
-                @Html.LabelFor(model => model.Email)
-                @Html.TextBoxFor(model => model.Email, new { @class = "form-control", @required = "required", @type = "email" })
-            </div>
-            <div class="form-group">
-                @Html.LabelFor(model => model.Phone)
-                @Html.TextBoxFor(model => model.Phone, new { @class = "form-control" })
-            </div>
-            <div class="form-group">
-                @Html.LabelFor(model => model.Message)
-                @Html.TextAreaFor(model => model.Message, new { @class = "form-control", @rows = "5", @required = "required" })
-            </div>
-            <button type="submit" class="btn mt-2 btn-primary">Wyślij</button>
-        }
-        @if (TempData["messageSent"] != null && (bool)TempData["messageSent"])
-        {
-            <div id="sent-message" class="alert alert-success mt-2">Wiadomość została wysłana!</div>
-            TempData["messageSent"] = null;
-        }
-
+    <div class="row mt-3">
+        <div class="col">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2429.3525735593523!2d16.910528216050794!3d52.40877997979039!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47045107b1c36515%3A0x3b57a9a9fcb10e2c!2sP%C3%B3%C5%82wiejska%2042%2C%2061-888%20Pozna%C5%84!5e0!3m2!1spl!2spl!4v1648732072619!5m2!1spl!2spl" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+        </div>
     </div>
 </div>
-<div>
-    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2429.3525735593523!2d16.910528216050794!3d52.40877997979039!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47045107b1c36515%3A0x3b57a9a9fcb10e2c!2sP%C3%B3%C5%82wiejska%2042%2C%2061-888%20Pozna%C5%84!5e0!3m2!1spl!2spl!4v1648732072619!5m2!1spl!2spl" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-</div>
-
-
-<style>
-    #wrapper {
-        display: flex;
-        flex-wrap: wrap;
-        margin: 0 -15x;
-    }
-
-    #left {
-        flex: 1;
-        padding: 20px;
-        box-sizing: border-box;
-    }
-
-    #right {
-        flex: 1;
-        padding: 20px;
-        box-sizing: border-box;
-    }
-
-</style>
