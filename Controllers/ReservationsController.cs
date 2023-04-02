@@ -221,22 +221,34 @@ namespace GearRent.Controllers
         // GET: Reservations/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            Debug.Write(id+"eeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
-            if (id == null || _context.Reservations == null)
+            //Debug.Write(id+"eeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+            //if (id == null || _context.Reservations == null)
+            //{
+            //    return NotFound();
+            //}
+
+            //var reservation = await _context.Reservations
+            //    //.Include(r => r.Car)
+            //    //.Include(r => r.User)
+            //    .FirstOrDefaultAsync(m => m.Id == id);
+            //if (reservation == null)
+            //{
+            //    return NotFound();
+            //}
+
+            //return View(reservation);
+            if (_context.Reservations == null)
             {
-                return NotFound();
+                return Problem("Entity set 'ApplicationDbContext.Reservations'  is null.");
+            }
+            var reservation = await _context.Reservations.FindAsync(id);
+            if (reservation != null)
+            {
+                _context.Reservations.Remove(reservation);
             }
 
-            var reservation = await _context.Reservations
-                //.Include(r => r.Car)
-                //.Include(r => r.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (reservation == null)
-            {
-                return NotFound();
-            }
-
-            return View(reservation);
+            await _context.SaveChangesAsync();
+            return StatusCode(200);
         }
 
         // POST: Reservations/Delete/5

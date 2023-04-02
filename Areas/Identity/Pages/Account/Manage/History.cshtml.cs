@@ -26,7 +26,8 @@ namespace GearRent.Areas.Identity.Pages.Account.Manage
 
         private async Task LoadAsync(IdentityUser user)
         {
-            Reservations = await _context.Reservations.Where(r => r.UserId == user.Id).ToListAsync();
+            Reservations = await _context.Reservations.Include(c=>c.Car)
+                .Where(r => r.UserId == user.Id).ToListAsync();
         }
 
         public async Task<IActionResult> OnGetAsync()
