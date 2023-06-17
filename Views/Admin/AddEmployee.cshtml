@@ -1,0 +1,97 @@
+﻿@model List<IdentityUser>
+@using GearRent.PaginatedList;
+@using Microsoft.AspNetCore.Identity;
+@{
+    Layout = "~/Views/Admin/_AdminLayout.cshtml";
+    ViewBag.Title = "Profile";
+    ViewBag.ControllerName = "Admin";
+    ViewBag.ActionName = "Index";
+}
+
+<h1>Add Employee</h1>
+
+<form id="searchForm">
+    <div class="form-group">
+        <label for="searchEmail">Search Email:</label>
+        <input type="text" class="form-control" id="searchEmail" placeholder="Enter email">
+    </div>
+</form>
+
+<hr>
+
+<form id="addEmployeeForm" method="post" asp-action="AddEmployee" asp-controller="Admin">
+    <div class="form-group">
+        <label for="selectedEmail">Selected Email:</label>
+        <select class="form-control" id="selectedEmail" name="email" multiple>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="selectedRole">Select Role:</label>
+        <select class="form-control" id="selectedRole" name="role">
+            @foreach (var role in ViewBag.Roles)
+            {
+                <option value="@role.Value">@role.Text</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Employee</button>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(function () {
+        $('#searchEmail').on('input', function () {
+            var searchEmail = $(this).val();
+            searchUsers(searchEmail);
+        });
+    });
+
+    function searchUsers(email) {
+        $.ajax({
+            url: '/Admin/SearchUsers',
+            type: 'GET',
+            data: { email: email },
+            success: function (data) {
+                $('#selectedEmail').empty(); 
+
+                $.each(data, function (index, user) {
+                    $('#selectedEmail').append('<option value="' + user.email + '">' + user.email + '</option>');
+                });
+            },
+            error: function () {
+                alert('An error occurred while searching for users.');
+            }
+        });
+    }
+</script>
+
+
+@*<h1>Create Employee</h1>
+
+<form asp-action="AddEmployee">
+    <div class="form-group">
+        <label for="Email">Email</label>
+        <input type="email" class="form-control" id="Email" name="Email" required>
+    </div>
+    <div class="form-group">
+        <label for="Password">Password</label>
+        <input type="password" class="form-control" id="Password" name="Password" required>
+    </div>
+    <div class="form-group">
+        <label for="ConfirmPassword">Confirm Password</label>
+        <input type="password" class="form-control" id="ConfirmPassword" name="ConfirmPassword" required>
+    </div>
+    <div class="form-group">
+        <label for="Role">Role</label>
+        <select class="form-control" id="Role" name="Role">
+            <option value="">Select Role</option>
+            @foreach (var role in ViewBag.Roles)
+            {
+                <option value="@role.Value">@role.Text</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>
+*@
