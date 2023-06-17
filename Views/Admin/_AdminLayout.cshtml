@@ -55,7 +55,9 @@
                             <li class="nav-item  ">
                                 <a class="nav-link  @(ViewBag.ControllerName == "Admin" && ViewBag.ActionName == "AddCar" ? "active" : "")" href="./addCar">Add car</a>
                             </li>
-
+                            <li class="nav-item  ">
+                                <a class="nav-link  @(ViewBag.ControllerName == "Admin" && ViewBag.ActionName == "EmployeesList" ? "active" : "")" href="./employeesList">Employees list</a>
+                            </li>
                             <li class="nav-item @(ViewBag.ControllerName == "Admin" && ViewBag.ActionName == "Index" ? "active" : "")"><a class="nav-link">Password</a></li>
 
                             <li class="nav-item"><a class="nav-link">Two-factor authentication</a></li>
