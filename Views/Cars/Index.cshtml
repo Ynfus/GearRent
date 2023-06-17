@@ -182,9 +182,13 @@
     const urlParams = new URLSearchParams(window.location.search);
     const startDate = urlParams.get('startDate');
     const endDate = urlParams.get('endDate');
+    const selectedCarTag = urlParams.get('selectedCarTag');
+    const selectedColor = urlParams.get('selectedColor');
 
     document.getElementById("startDate").value = startDate;
     document.getElementById("endDate").value = endDate;
+    document.getElementById("selectedCarTag").value = selectedCarTag;
+    document.getElementById("selectedColor").value = selectedColor;
 
     const startDateInput = document.querySelector('#startDate');
     const endDateInput = document.querySelector('#endDate');
@@ -201,6 +205,19 @@
             endDateInput.value = minEndDate;
         }
     });
+
+    endDateInput.addEventListener('change', () => {
+        const startDateValue = new Date(startDateInput.value);
+        const endDateValue = new Date(endDateInput.value);
+        const nextDay = new Date(startDateValue);
+        nextDay.setDate(startDateValue.getDate() + 1);
+        const minEndDate = nextDay.toISOString().slice(0, 10);
+
+        if (endDateValue <= startDateValue) {
+            endDateInput.value = minEndDate;
+        }
+    });
+
     const orderLinks = document.querySelectorAll('.order-link');
     orderLinks.forEach(link => {
         const carId = link.getAttribute('data-car-id');
@@ -208,11 +225,14 @@
             event.preventDefault();
             const selectedEndDate = document.querySelector('#endDate').value;
             const selectedStartDate = document.querySelector('#startDate').value;
+            const selectedCarTag = document.querySelector('#selectedCarTag').value;
+            const selectedColor = document.querySelector('#selectedColor').value;
             if (!selectedEndDate || !selectedStartDate) {
                 alert('Please select start and end dates.');
                 return;
             }
-            window.location.href = `@Url.Action("Create", "Reservations")?carId=${carId}&startDate=${selectedStartDate}&endDate=${selectedEndDate}`;
+            const url = `@Url.Action("Create", "Reservations")?carId=${carId}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&selectedCarTag=${selectedCarTag}&selectedColor=${selectedColor}`;
+            window.location.href = url;
         });
     });
 </script>
