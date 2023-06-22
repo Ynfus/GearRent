@@ -11,5 +11,7 @@ namespace GearRent.Models
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public ReservationStatus Status { get; set; } = ReservationStatus.Pending;
+
+        public decimal ReservationValue { get; set; }
     }
 }
