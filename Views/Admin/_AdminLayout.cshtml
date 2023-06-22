@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/GearRent.styles.css" asp-append-version="true" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha384-xjSc..."
+
 </head>
 <body>
     <header>
@@ -53,10 +57,13 @@
                                 <a class="nav-link  @(ViewBag.ControllerName == "Admin" && ViewBag.ActionName == "Index" ? "active" : "")" href="./index">Upcoming bookings</a>
                             </li>
                             <li class="nav-item  ">
-                                <a class="nav-link  @(ViewBag.ControllerName == "Admin" && ViewBag.ActionName == "AddCar" ? "active" : "")" href="./addCar">Add car</a>
+                                <a class="nav-link  @(ViewBag.ControllerName == "Admin" && ViewBag.ActionName == "CarList" ? "active" : "")" href="./carList">Car list</a>
                             </li>
                             <li class="nav-item  ">
                                 <a class="nav-link  @(ViewBag.ControllerName == "Admin" && ViewBag.ActionName == "EmployeesList" ? "active" : "")" href="./employeesList">Employees list</a>
+                            </li>
+                            <li class="nav-item  ">
+                                <a class="nav-link  @(ViewBag.ControllerName == "Admin" && ViewBag.ActionName == "MonthlyReport" ? "active" : "")" href="./monthlyReport">Raports</a>
                             </li>
                             <li class="nav-item @(ViewBag.ControllerName == "Admin" && ViewBag.ActionName == "Index" ? "active" : "")"><a class="nav-link">Password</a></li>
 
