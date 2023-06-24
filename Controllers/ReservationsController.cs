@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Cors;
 using Stripe.Checkout;
 using Newtonsoft.Json;
 using NuGet.Versioning;
+using System.Net.Mail;
 
 namespace GearRent.Controllers
 {
@@ -37,7 +38,7 @@ namespace GearRent.Controllers
             var applicationDbContext = _context.Reservations.Include(r => r.Car).Include(r => r.User);
             return View(await applicationDbContext.ToListAsync());
         }
-        public async Task<ActionResult>  Checkout(string payment_intent, string payment_intent_client_secret, string redirect_status, Reservation reservation)
+        public async Task<ActionResult> Checkout(string payment_intent, string payment_intent_client_secret, string redirect_status, Reservation reservation)
         {
             ViewBag.MyValue = reservation.Id;
             return View();
@@ -132,21 +133,37 @@ namespace GearRent.Controllers
             string userId = HttpContext.User.Identity.IsAuthenticated ? HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value : null;
 
             var reservation = await _context.Reservations.FindAsync(id);
-            if (reservation.UserId!=userId)
+            if (reservation.UserId != userId)
             {
                 return NotFound();
             }
             reservation.Status = ReservationStatus.Approved;
+            Car car = await _context.Cars.FindAsync(reservation.CarId);
+            var email = await _context.Users
+                .Where(u => u.Id == reservation.UserId)
+                .Select(u => u.Email)
+                .FirstOrDefaultAsync();
+
+            SmtpClient smtpClient = new SmtpClient("localhost", 2525);
+            smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+            MailMessage mailMessage = new MailMessage();
+            mailMessage.From = new MailAddress("sender@example.com");
+            mailMessage.To.Add(new MailAddress(email));
+            mailMessage.Subject = $"Potwierdzenie rezerwacji {reservation.Id}";
+            mailMessage.Body = $"Twoja rezerwacja na {car.Make} {car.Model} została pomyślnie złożona.\nkwota zamówienia to: {reservation.ReservationValue}";
+
+            smtpClient.Send(mailMessage);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Thanks", "Reservations", new { id=id });
+            return RedirectToAction("Thanks", "Reservations", new { id = id });
         }
         public async Task<IActionResult> Thanks(int id)
         {
             Reservation reservation = await _context.Reservations.FindAsync(id);
-           Car car = await _context.Cars.FindAsync(reservation.CarId);
+            Car car = await _context.Cars.FindAsync(reservation.CarId);
+
             ViewBag.Car = car;
-            // Przekaż model do widoku i wyświetl stronę
+
             return View(reservation);
 
         }
@@ -185,13 +202,13 @@ namespace GearRent.Controllers
 
 
 
-    /// ///////////////////////////////////////////////////////////////////////////////////////
+        /// ///////////////////////////////////////////////////////////////////////////////////////
 
 
-    // POST: Reservations/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
+        // POST: Reservations/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,CarId,StartDate,EndDate,Status")] Reservation reservation)
         {
