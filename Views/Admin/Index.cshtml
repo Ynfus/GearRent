@@ -1,5 +1,4 @@
-﻿
-@using GearRent.PaginatedList;
+﻿@using GearRent.PaginatedList;
 @model PaginatedList<GearRent.Models.Reservation>
 @{
     Layout = "~/Views/Admin/_AdminLayout.cshtml";
@@ -19,24 +18,28 @@
     <thead>
         <tr>
             <th>Reservation ID</th>
-            <th>User</th>
             <th>Car</th>
             <th>Start Date</th>
             <th>End Date</th>
+            <th>Actions</th> 
         </tr>
     </thead>
     <tbody>
+        @foreach (var reservation in Model)
+        {
+            <tr>
+                <td>@reservation.Id</td>
+                <td>@reservation.Car.Make @reservation.Car.Model</td>
+                <td>@reservation.StartDate.ToShortDateString()</td>
+                <td>@reservation.EndDate.ToShortDateString()</td>
+                <td>
+                    <a href="@Url.Action("CarReservations")">
+                        <i class="fas fa-times-circle"></i>
+                    </a>
 
-            @foreach (var reservation in Model)
-            {
-                <tr>
-                    <td>@reservation.Id</td>
-@*                    <td>@reservation.User.UserName</td>*@
-                    <td>@reservation.Car.Make @reservation.Car.Model</td>
-                    <td>@reservation.StartDate.ToShortDateString()</td>
-                    <td>@reservation.EndDate.ToShortDateString()</td>
-                </tr>
-            }   
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
 @{
@@ -44,22 +47,40 @@
     var nextDisabled = !Model.HasNextPage ? "disabled" : "";
 }
 <div class="d-flex justify-content-between">
-    <a asp-action="Index"
-       asp-route-sortOrder="@ViewData["CurrentSort"]"
-       asp-route-pageNumber="@(Model.PageIndex - 1)"
-       asp-route-currentFilter="@ViewData["CurrentFilter"]"
-       class="btn btn-default @prevDisabled">
-        Previous
-    </a>
-
-    <a asp-action="Index"
-       asp-route-sortOrder="@ViewData["CurrentSort"]"
-       asp-route-pageNumber="@(Model.PageIndex + 1)"
-       asp-route-currentFilter="@ViewData["CurrentFilter"]"
-       class="btn btn-default @nextDisabled">
-        Next
-    </a>
-
+    <nav>
+        <ul class="pagination">
+            @if (Model.HasPreviousPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { pageNumber = Model.PageIndex - 1 })">Previous</a>
+                </li>
+            }
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                if (i == Model.PageIndex)
+                {
+                    <li class="page-item active">
+                        <span class="page-link">@i</span>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { pageNumber = i })">@i</a>
+                    </li>
+                }
+            }
+            @if (Model.HasNextPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { pageNumber = Model.PageIndex + 1 })">Next</a>
+                </li>
+            }
+        </ul>
+    </nav>
+    <div>
+        <a href="@Url.Action("AddCar")" class="btn btn-primary">Add Car</a>
+    </div>
 </div>
 
 @*
