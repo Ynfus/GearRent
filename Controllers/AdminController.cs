@@ -11,6 +11,7 @@ using Stripe.Radar;
 using System;
 using System.Data;
 using System.Diagnostics;
+using System.Drawing.Printing;
 using System.Linq;
 
 namespace GearRent.Controllers
@@ -28,7 +29,17 @@ namespace GearRent.Controllers
             _roleManager = roleManager;
 
         }
+        [HttpGet]
+        public async Task<IActionResult> CarList(int? pageNumber)
+        {
+            var carList = from r in _context.Cars
+                          select r;
 
+            int pageSize = 3;
+            var paginatedCars = await PaginatedList<Car>.CreateAsync(carList.AsQueryable(), pageNumber ?? 1, pageSize);
+
+            return View(paginatedCars);
+        }
         public IActionResult AddCar()
         {
             var tagItems = Enum.GetValues(typeof(CarTag))
@@ -70,6 +81,108 @@ namespace GearRent.Controllers
 
             int pageSize = 3;
             return View(await PaginatedList<Reservation>.CreateAsync(upcomingReservations.AsNoTracking(), pageNumber ?? 1, pageSize));
+        }
+
+        // GET: Cars/Edit/5
+        public async Task<IActionResult> EditCar(int? id)
+        {
+            if (id == null || _context.Cars == null)
+            {
+                return NotFound();
+            }
+
+            var car = await _context.Cars.FindAsync(id);
+            if (car == null)
+            {
+                return NotFound();
+            }
+            return View(car);
+        }
+
+        // POST: Cars/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditCar(int id, [Bind("Id,Make,Model,Year,Color,NumberOfSeats,EngineSize,Available,PhotoLink")] Car car)
+        {
+            if (id != car.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(car);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!CarExists(car.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(CarList));
+            }
+            return View(car);
+        }
+        [HttpGet]
+        public async Task<IActionResult> CarReservations(int id, int? pageNumber)
+        {
+            var carReservations =  _context.Reservations
+                .Where(r => r.CarId == id)
+                .AsQueryable();
+
+            var car =  _context.Cars.Find(id);
+
+            if (carReservations == null || car == null)
+            {
+                return NotFound();
+            }
+
+            var carReservationViewModels = carReservations.Select(r => new CarReservationsViewModel
+            {
+                CarMake = car.Make,
+                CarModel = car.Model,
+                CarYear = car.Year,
+                UserId = r.UserId,
+                StartDate = r.StartDate.Date,
+                EndDate = r.EndDate
+            }).AsQueryable();
+
+            int pageSize = 3;
+            var paginatedReservations = await PaginatedList<CarReservationsViewModel>.CreateAsync(carReservationViewModels, pageNumber ?? 1, pageSize);
+
+            return View(paginatedReservations);
+
+
+
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteCar(int id)
+        {
+            var car = await _context.Cars.FindAsync(id);
+            if (car == null)
+            {
+                return NotFound();
+            }
+
+            _context.Cars.Remove(car);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+        private bool CarExists(int id)
+        {
+            return (_context.Cars?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
         public IActionResult Index1()
@@ -124,6 +237,46 @@ namespace GearRent.Controllers
                 .ToList();
 
             return Json(users);
+        }
+        public async Task<IActionResult> MonthlyReport(int year, int month)
+        {
+            var reservations = await _context.Reservations
+                .Where(r => r.StartDate.Year == year && r.StartDate.Month == month)
+                .ToListAsync();
+
+            decimal totalRevenue = reservations.Sum(r => r.ReservationValue);
+
+            int totalReservations = reservations.Count;
+
+            var reportData = new ReportViewModel
+            {
+                Year = year,
+                Month = month,
+                TotalRevenue = totalRevenue,
+                TotalReservations = totalReservations
+            };
+
+            return View(reportData);
+        }
+        public IActionResult MonthlyReportGet(int year, int month)
+        {
+            var reservations = _context.Reservations
+                .Where(r => r.StartDate.Year == year && r.StartDate.Month == month)
+                .ToList();
+
+            decimal totalRevenue = reservations.Sum(r => r.ReservationValue);
+
+            int totalReservations = reservations.Count;
+
+            var reportData = new ReportViewModel
+            {
+                Year = year,
+                Month = month,
+                TotalRevenue = totalRevenue,
+                TotalReservations = totalReservations
+            };
+
+            return Json(reportData);
         }
         //[HttpPost]
         ////[ValidateAntiForgeryToken]
