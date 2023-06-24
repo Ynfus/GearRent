@@ -37,11 +37,12 @@ namespace GearRent.Controllers
             var applicationDbContext = _context.Reservations.Include(r => r.Car).Include(r => r.User);
             return View(await applicationDbContext.ToListAsync());
         }
-        public async Task<IActionResult> Checkout(string payment_intent, string payment_intent_client_secret, string redirect_status, Reservation reservation)
+        public async Task<ActionResult>  Checkout(string payment_intent, string payment_intent_client_secret, string redirect_status, Reservation reservation)
         {
             ViewBag.MyValue = reservation.Id;
             return View();
         }
+
         // GET: Reservations/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -87,8 +88,13 @@ namespace GearRent.Controllers
         public async Task<IActionResult> Create([Bind("Id,UserId,CarId,StartDate,EndDate,Status")] Reservation reservation)
         {
             Car car = await _context.Cars.FindAsync(reservation.CarId);
-            Debug.Write(reservation.EndDate);
+            if (car == null)
+            {
+                return NotFound();
+            }
             reservation.Car = car;
+            var value = car.Price * (reservation.EndDate - reservation.StartDate).Days;
+            reservation.ReservationValue = value;
             _context.Add(reservation);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Checkout), reservation);
@@ -99,6 +105,7 @@ namespace GearRent.Controllers
             //ViewData["UserId"] = new SelectList(_context.Set<ApplicationUser>(), "Id", "Id", reservation.UserId);
             //return View(reservation);
         }
+
 
         // GET: Reservations/Edit/5
         public async Task<IActionResult> Edit(int? id)
