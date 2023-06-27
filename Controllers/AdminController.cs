@@ -13,6 +13,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing.Printing;
 using System.Linq;
+using System.Net.Mail;
 
 namespace GearRent.Controllers
 {
@@ -80,6 +81,7 @@ namespace GearRent.Controllers
 
 
             int pageSize = 3;
+
             return View(await PaginatedList<Reservation>.CreateAsync(upcomingReservations.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
@@ -136,11 +138,11 @@ namespace GearRent.Controllers
         [HttpGet]
         public async Task<IActionResult> CarReservations(int id, int? pageNumber)
         {
-            var carReservations =  _context.Reservations
+            var carReservations = _context.Reservations
                 .Where(r => r.CarId == id)
                 .AsQueryable();
 
-            var car =  _context.Cars.Find(id);
+            var car = _context.Cars.Find(id);
 
             if (carReservations == null || car == null)
             {
@@ -176,6 +178,37 @@ namespace GearRent.Controllers
             }
 
             _context.Cars.Remove(car);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+        [HttpDelete]
+        public async Task<IActionResult> DeleteReservation(int id)
+        {
+            var reservation = await _context.Reservations.FindAsync(id);
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+
+            _context.Reservations.Remove(reservation);
+            var email = await _context.Users
+                .Where(u => u.Id == reservation.UserId)
+                .Select(u => u.Email)
+                .FirstOrDefaultAsync();
+            var car = await _context.Cars
+                .Where(u => u.Id == reservation.CarId)
+                .Select(u => new { u.Make, u.Model })
+                .FirstOrDefaultAsync();
+            SmtpClient smtpClient = new SmtpClient("localhost", 2525);
+            smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+            MailMessage mailMessage = new MailMessage();
+            mailMessage.From = new MailAddress("sender@example.com");
+            mailMessage.To.Add(new MailAddress(email));
+            mailMessage.Subject = $"Anulacja rezerwacji {reservation.Id}";
+            mailMessage.Body = $"Twoja rezerwacja na {car.Make} {car.Model} na okres {reservation.StartDate.Date.ToShortDateString()} - {reservation.EndDate.Date.ToShortDateString()} została anulowana.\nW razie problemów prosimy o kontakt \nPozdrawiam";
+
+            smtpClient.Send(mailMessage);
             await _context.SaveChangesAsync();
 
             return NoContent();
