@@ -13,6 +13,7 @@ using System.Drawing.Printing;
 
 namespace GearRent.Controllers
 {
+
     public class CarsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -33,6 +34,49 @@ namespace GearRent.Controllers
 
         }
         public async Task<IActionResult> Index(string sortOrder, DateTime? startDate, DateTime? endDate, int? pageNumber, CarTag? selectedCarTag, string? selectedColor)
+        {
+            ViewBag.PriceSortParm = String.IsNullOrEmpty(sortOrder) ? "price_desc" : "";
+            ViewBag.NameSortParm = sortOrder == "name" ? "name_desc" : "name";
+            var cars = from c in _context.Cars
+                       select c;
+            ViewBag.CarTags = Enum.GetValues(typeof(CarTag));
+
+            var colors = _context.Cars.Select(c => c.Color).Distinct().ToList();
+            ViewBag.Colors = colors;
+
+            if (startDate != null && endDate != null)
+            {
+                cars = cars.Where(c => c.Reservations.All(r => r.EndDate < startDate || r.StartDate > endDate));
+            }
+            if (!string.IsNullOrEmpty(selectedColor))
+            {
+                cars = cars.Where(c => c.Color == selectedColor);
+            }
+            if (selectedCarTag.HasValue)
+            {
+                var tag = selectedCarTag;
+                cars = cars.Where(c => c.Tag == tag);
+            }
+            switch (sortOrder)
+            {
+                case "price_desc":
+                    cars = cars.OrderByDescending(c => c.Price);
+                    break;
+                case "name":
+                    cars = cars.OrderBy(c => c.Make);
+                    break;
+                case "name_desc":
+                    cars = cars.OrderByDescending(c => c.Make);
+                    break;
+                default:
+                    cars = cars.OrderBy(c => c.Price);
+                    break;
+            }
+            int pageSize = 3;
+            return View(await PaginatedList<Car>.CreateAsync(cars.AsNoTracking(), pageNumber ?? 1, pageSize));
+            //return View(cars.ToList());
+        }
+        public async Task<IActionResult> Index1(string sortOrder, DateTime? startDate, DateTime? endDate, int? pageNumber, CarTag? selectedCarTag, string? selectedColor)
         {
             ViewBag.PriceSortParm = String.IsNullOrEmpty(sortOrder) ? "price_desc" : "";
             ViewBag.NameSortParm = sortOrder == "name" ? "name_desc" : "name";
