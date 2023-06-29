@@ -89,7 +89,7 @@ async function checkStatus() {
     switch (paymentIntent.status) {
         case "succeeded":
             showMessage("Payment succeeded!");
-            window.location.href = "/reservations/thanks1?id="+reservationId;
+            window.location.href = "/reservations/thanksEmail?id="+reservationId;
             break;
         case "processing":
             showMessage("Your payment is processing.");

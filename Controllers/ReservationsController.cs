@@ -1,42 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GearRent.Data;
 using GearRent.Models;
-using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
-using System.Diagnostics;
-using Newtonsoft.Json.Linq;
-using System.Globalization;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Stripe;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Cors;
-using Stripe.Checkout;
-using Newtonsoft.Json;
-using NuGet.Versioning;
-using System.Net.Mail;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using GearRent.Services;
 
 namespace GearRent.Controllers
 {
     public class ReservationsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IEmailSender _emailSender;
+        private readonly IUserService _userService;
+        private readonly ICarService _carService;
+        private readonly IReservationService _reservationService;
 
-        public ReservationsController(ApplicationDbContext context)
+        public ReservationsController(ApplicationDbContext context, IEmailSender emailSender,
+            IUserService userService, ICarService carService, IReservationService reservationService)
         {
             _context = context;
+            _emailSender = emailSender;
+            _userService = userService;
+            _carService = carService;
+            _reservationService = reservationService;
         }
 
-        // GET: Reservations
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Reservations.Include(r => r.Car).Include(r => r.User);
-            return View(await applicationDbContext.ToListAsync());
+            var applicationDbContext = await _reservationService.GetAllReservationsAsync();
+            return View();
         }
         public async Task<ActionResult> Checkout(string payment_intent, string payment_intent_client_secret, string redirect_status, Reservation reservation)
         {
@@ -44,18 +38,10 @@ namespace GearRent.Controllers
             return View();
         }
 
-        // GET: Reservations/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null || _context.Reservations == null)
-            {
-                return NotFound();
-            }
 
-            var reservation = await _context.Reservations
-                .Include(r => r.Car)
-                .Include(r => r.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var reservation = await _reservationService.GetReservationByIdAsyncInclude(id);
             if (reservation == null)
             {
                 return NotFound();
@@ -64,7 +50,6 @@ namespace GearRent.Controllers
             return View(reservation);
         }
 
-        // GET: Reservations/Create
         public IActionResult Create(int carId, string startDate, string endDate)
         {
 
@@ -75,20 +60,16 @@ namespace GearRent.Controllers
             }
             ViewData["CarId"] = carId;
             ViewData["StartDate"] = startDate;
-            //DateTime endDateTime = DateTime.Parse(endDate);
             ViewData["EndDate"] = endDate;
             ViewData["UserId"] = userId;
             return View();
         }
 
-        // POST: Reservations/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,UserId,CarId,StartDate,EndDate,Status")] Reservation reservation)
         {
-            Car car = await _context.Cars.FindAsync(reservation.CarId);
+            Car car = await _carService.GetCarAsync(reservation.CarId);
             if (car == null)
             {
                 return NotFound();
@@ -99,24 +80,17 @@ namespace GearRent.Controllers
             _context.Add(reservation);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Checkout), reservation);
-
-
-
-            //ViewData["CarId"] = new SelectList(_context.Cars, "Id", "Id", reservation.CarId);
-            //ViewData["UserId"] = new SelectList(_context.Set<ApplicationUser>(), "Id", "Id", reservation.UserId);
-            //return View(reservation);
         }
 
 
-        // GET: Reservations/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
             if (id == null || _context.Reservations == null)
             {
                 return NotFound();
             }
 
-            var reservation = await _context.Reservations.FindAsync(id);
+            var reservation = await _reservationService.GetReservationByIdAsync(id);
             if (reservation == null)
             {
                 return NotFound();
@@ -128,7 +102,7 @@ namespace GearRent.Controllers
 
 
 
-        public async Task<IActionResult> Thanks1(int id)
+        public async Task<IActionResult> ThanksEmail(int id)
         {
             string userId = HttpContext.User.Identity.IsAuthenticated ? HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value : null;
 
@@ -138,76 +112,26 @@ namespace GearRent.Controllers
                 return NotFound();
             }
             reservation.Status = ReservationStatus.Approved;
-            Car car = await _context.Cars.FindAsync(reservation.CarId);
+            Car car = await _carService.GetCarAsync(reservation.CarId);
             var email = await _context.Users
                 .Where(u => u.Id == reservation.UserId)
                 .Select(u => u.Email)
                 .FirstOrDefaultAsync();
-
-            SmtpClient smtpClient = new SmtpClient("localhost", 2525);
-            smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-            MailMessage mailMessage = new MailMessage();
-            mailMessage.From = new MailAddress("sender@example.com");
-            mailMessage.To.Add(new MailAddress(email));
-            mailMessage.Subject = $"Potwierdzenie rezerwacji {reservation.Id}";
-            mailMessage.Body = $"Twoja rezerwacja na {car.Make} {car.Model} została pomyślnie złożona.\nkwota zamówienia to: {reservation.ReservationValue}";
-
-            smtpClient.Send(mailMessage);
+            var subject = $"Potwierdzenie rezerwacji {reservation.Id}";
+            var body = $"Twoja rezerwacja na {car.Make} {car.Model} została pomyślnie złożona.\nkwota zamówienia to: {reservation.ReservationValue}";
+            await _emailSender.SendEmailAsync(email, subject, body);
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Thanks", "Reservations", new { id = id });
         }
         public async Task<IActionResult> Thanks(int id)
         {
-            Reservation reservation = await _context.Reservations.FindAsync(id);
-            Car car = await _context.Cars.FindAsync(reservation.CarId);
-
+            Reservation reservation = await _reservationService.GetReservationByIdAsync(id);
+            Car car = await _carService.GetCarAsync(reservation.CarId);
             ViewBag.Car = car;
-
             return View(reservation);
-
         }
 
-
-
-        /// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        //[DisableCors]
-        //[HttpPost]
-        //public ActionResult ProcessPayment(Reservation reservation)
-        //{
-        //    StripeConfiguration.ApiKey = "sk_test_51Mqvj3Ea7vPLiBopPCZjU5tY28KQYLyPC2K9sPLhKUsh3w1dq26Xu9qRXDrPNmvFHSXYusKaWChyCNbD8HTwsgUx00qcWXBCjz";
-        //    try
-        //    {
-
-
-        //        var options = new ChargeCreateOptions
-        //        {
-        //            Amount = 2000,
-        //            Currency = "pln",
-        //            Source = "tok_visa",
-        //            Description = "no elo elo",
-        //        };
-        //        var service = new ChargeService();
-        //        var charge = service.Create(options);
-
-        //        return View("Success");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ViewBag.Error = ex.Message;
-        //        return View("Error");
-        //    }
-        //}
-        /// ///////////////////////////////////
-
-
-
-        /// ///////////////////////////////////////////////////////////////////////////////////////
-
-
-        // POST: Reservations/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,CarId,StartDate,EndDate,Status")] Reservation reservation)
@@ -242,30 +166,13 @@ namespace GearRent.Controllers
             return View(reservation);
         }
 
-        // GET: Reservations/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            //Debug.Write(id+"eeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
-            //if (id == null || _context.Reservations == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //var reservation = await _context.Reservations
-            //    //.Include(r => r.Car)
-            //    //.Include(r => r.User)
-            //    .FirstOrDefaultAsync(m => m.Id == id);
-            //if (reservation == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //return View(reservation);
             if (_context.Reservations == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Reservations'  is null.");
             }
-            var reservation = await _context.Reservations.FindAsync(id);
+            var reservation = await _reservationService.GetReservationByIdAsync(id);
             if (reservation != null)
             {
                 _context.Reservations.Remove(reservation);
@@ -275,16 +182,11 @@ namespace GearRent.Controllers
             return StatusCode(200);
         }
 
-        // POST: Reservations/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Reservations == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Reservations'  is null.");
-            }
-            var reservation = await _context.Reservations.FindAsync(id);
+            var reservation = await _reservationService.GetReservationByIdAsync(id);
             if (reservation != null)
             {
                 _context.Reservations.Remove(reservation);
