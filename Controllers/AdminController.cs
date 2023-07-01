@@ -1,8 +1,10 @@
 ﻿using GearRent.Data;
 using GearRent.Models;
 using GearRent.PaginatedList;
+using GearRent.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -22,22 +24,35 @@ namespace GearRent.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IEmailSender _emailSender;
+        private readonly IUserService _userService;
+        private readonly ICarService _carService;
+        private readonly IReservationService _reservationService;
+        private readonly IEmployeeService _employeeService;
 
-        public AdminController(ApplicationDbContext context, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+
+        public AdminController(ApplicationDbContext context, UserManager<IdentityUser> userManager,
+            RoleManager<IdentityRole> roleManager, IEmailSender emailSender, ICarService carService,
+            IReservationService reservationService, IUserService userService, IEmployeeService employeeService)
         {
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
-
+            _carService = carService;
+            _reservationService = reservationService;
+            _userService = userService;
+            _emailSender = emailSender;
+            _employeeService = employeeService;
         }
         [HttpGet]
         public async Task<IActionResult> CarList(int? pageNumber)
         {
-            var carList = from r in _context.Cars
-                          select r;
+            //var carList = from r in _context.Cars
+            //              select r;
 
+            var carList = _carService.GetAllCarsAsyncQueryable();
             int pageSize = 3;
-            var paginatedCars = await PaginatedList<Car>.CreateAsync(carList.AsQueryable(), pageNumber ?? 1, pageSize);
+            var paginatedCars = await PaginatedList<Car>.CreateAsync(carList.AsNoTracking(), pageNumber ?? 1, pageSize);
 
             return View(paginatedCars);
         }
@@ -74,18 +89,12 @@ namespace GearRent.Controllers
             var currentDate = DateTime.Now.AddDays(-10);
             upcomingReservations = upcomingReservations
                 .Where(r => r.StartDate > currentDate /*&& r.Status == ReservationStatus.Approved*/)
-                .Include(r => r.Car)
-                //.Include(r => r.User)
-                ;
-
-
-
+                .Include(r => r.Car);
             int pageSize = 3;
 
             return View(await PaginatedList<Reservation>.CreateAsync(upcomingReservations.AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
-        // GET: Cars/Edit/5
         public async Task<IActionResult> EditCar(int? id)
         {
             if (id == null || _context.Cars == null)
@@ -100,10 +109,6 @@ namespace GearRent.Controllers
             }
             return View(car);
         }
-
-        // POST: Cars/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditCar(int id, [Bind("Id,Make,Model,Year,Color,NumberOfSeats,EngineSize,Available,PhotoLink")] Car car)
@@ -112,7 +117,6 @@ namespace GearRent.Controllers
             {
                 return NotFound();
             }
-
             if (ModelState.IsValid)
             {
                 try
@@ -163,9 +167,6 @@ namespace GearRent.Controllers
             var paginatedReservations = await PaginatedList<CarReservationsViewModel>.CreateAsync(carReservationViewModels, pageNumber ?? 1, pageSize);
 
             return View(paginatedReservations);
-
-
-
         }
 
         [HttpDelete]
@@ -185,30 +186,18 @@ namespace GearRent.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteReservation(int id)
         {
-            var reservation = await _context.Reservations.FindAsync(id);
+            var reservation = await _reservationService.GetReservationByIdAsync(id);
             if (reservation == null)
             {
                 return NotFound();
             }
 
             _context.Reservations.Remove(reservation);
-            var email = await _context.Users
-                .Where(u => u.Id == reservation.UserId)
-                .Select(u => u.Email)
-                .FirstOrDefaultAsync();
-            var car = await _context.Cars
-                .Where(u => u.Id == reservation.CarId)
-                .Select(u => new { u.Make, u.Model })
-                .FirstOrDefaultAsync();
-            SmtpClient smtpClient = new SmtpClient("localhost", 2525);
-            smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-            MailMessage mailMessage = new MailMessage();
-            mailMessage.From = new MailAddress("sender@example.com");
-            mailMessage.To.Add(new MailAddress(email));
-            mailMessage.Subject = $"Anulacja rezerwacji {reservation.Id}";
-            mailMessage.Body = $"Twoja rezerwacja na {car.Make} {car.Model} na okres {reservation.StartDate.Date.ToShortDateString()} - {reservation.EndDate.Date.ToShortDateString()} została anulowana.\nW razie problemów prosimy o kontakt \nPozdrawiam";
-
-            smtpClient.Send(mailMessage);
+            var email = await _userService.GetUserEmailByIdAsync(reservation.UserId);
+            var car = await _carService.GetCarEmailByIdAsync(reservation.CarId);
+            var subject = $"Anulacja rezerwacji {reservation.Id}";
+            var body = $"Twoja rezerwacja na {car.Make} {car.Model} na okres {reservation.StartDate.Date.ToShortDateString()} - {reservation.EndDate.Date.ToShortDateString()} została anulowana.\nW razie problemów prosimy o kontakt \nPozdrawiam";
+            _emailSender.SendEmailAsync(email,subject,body);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -225,14 +214,7 @@ namespace GearRent.Controllers
         }
         public async Task<IActionResult> EmployeesList(int? pageNumber)
         {
-            var employeesIdList = await _context.UserRoles
-                .Select(userRole => userRole.UserId)
-                .ToListAsync();
-
-            var employeesList = _context.Users
-                .Where(user => employeesIdList.Contains(user.Id))
-                .AsQueryable();
-
+            var employeesList = await _employeeService.GetEmployeesAsync();
             int pageSize = 3;
             var paginatedUsers = await PaginatedList<IdentityUser>.CreateAsync(employeesList, pageNumber ?? 1, pageSize);
 
@@ -311,56 +293,5 @@ namespace GearRent.Controllers
 
             return Json(reportData);
         }
-        //[HttpPost]
-        ////[ValidateAntiForgeryToken]
-        //[ActionName("AddEmployee")]
-        //public async Task<IActionResult> AddEmployeePost(IdentityUser model)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        //var passwordValidator = new PasswordValidator<IdentityUser>();
-        //        //var passwordValidationResult = await passwordValidator.ValidateAsync(_userManager, null, model.PasswordHash);
-        //        //if (!passwordValidationResult.Succeeded)
-        //        //{
-        //        //    foreach (var error in passwordValidationResult.Errors)
-        //        //    {
-        //        //        ModelState.AddModelError(string.Empty, error.Description);
-        //        //    }
-        //        //    return View(model);
-        //        //}
-
-        //        //var existingUser = await _userManager.FindByEmailAsync(model.Email);
-        //        //if (existingUser != null)
-        //        //{
-        //        //    ModelState.AddModelError(string.Empty, "Email is already taken.");
-        //        //    return View(model);
-        //        //}
-
-        //        var user = new IdentityUser
-        //        {
-        //            UserName = model.Email,
-        //            Email = model.Email
-        //        };
-
-        //        var result = await _userManager.CreateAsync(user, model.PasswordHash);
-
-        //        if (result.Succeeded)
-        //        {
-        //            await _userManager.AddToRoleAsync(user, "Employee");
-
-        //            return RedirectToAction(nameof(Index));
-        //        }
-
-        //        foreach (var error in result.Errors)
-        //        {
-        //            ModelState.AddModelError(string.Empty, error.Description);
-        //        }
-        //    }
-
-        //    return View(model);
-        //}
-
-
-
     }
 }
