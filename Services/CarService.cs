@@ -9,7 +9,9 @@ namespace GearRent.Services
     public interface ICarService
     {
         Task<Car> GetCarAsync(int id);
-
+        Task<List<Car>> GetAllCarsAsync();
+        IQueryable<Car> GetAllCarsAsyncQueryable();
+        Task<CarEmailViewModel> GetCarEmailByIdAsync(int carId);
     }
 
     public class CarService : ICarService
@@ -25,8 +27,24 @@ namespace GearRent.Services
             return await _context.Cars.FindAsync(id);
 
         }
+        public async Task<List<Car>> GetAllCarsAsync()
+        {
+            return await _context.Cars
+                .ToListAsync();
+        }
+        public IQueryable<Car> GetAllCarsAsyncQueryable()
+        {
+            return _context.Cars.AsQueryable();
+        }
+        public async Task<CarEmailViewModel> GetCarEmailByIdAsync(int carId)
+        {
+            var car = await _context.Cars
+                .Where(u => u.Id == carId)
+                .Select(u => new CarEmailViewModel { Make = u.Make, Model = u.Model })
+                .FirstOrDefaultAsync();
 
-
+            return car;
+        }
 
     }
 }
