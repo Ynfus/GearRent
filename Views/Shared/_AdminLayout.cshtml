@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - GearRent</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/GearRent.styles.css" asp-append-version="true" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha384-xjSc..."
+
+</head>
+<body>
+    <header>
+        <div class="bg-image flex"
+             style="background-image: url('/car.jpg'); background-size:cover; background-position:center center;
+            height: 70vh">
+            <nav class="navbar navbar-expand-lg navbar-light bg-transparent ms-4">
+                <a class="navbar-brand" href="/home/index">GearRent</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="/home/index">Home <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/cars/index">Samochody</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/reservations/create">Zarezerwuj</a>
+                        </li>
+                        <li class="nav-item">
+                            <partial name="_LoginPartial" />
+                        </li>
+                    </ul>
+
+                </div>
+
+            </nav>
+        </div>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            <h1 class="mt-2">Manage your account1</h1>
+
+            <div>
+                <h2>Change your account settings</h2>
+                <hr />
+                <div class="row">
+                    <div class="col-md-3">
+                        <ul class="nav nav-pills flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewBag.ControllerName == "Admin" && ViewBag.ActionName == "Index" ? "active" : "")" href="@Url.Action("Index", "Admin")">Upcoming bookings</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewBag.ControllerName == "Cars" && (ViewBag.ActionName == "CarList" || ViewBag.ActionName == "AddCar") ? "active" : "")" href="@Url.Action("CarList", "Cars")">Car list</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewBag.ControllerName == "Admin" && ViewBag.ActionName == "EmployeesList" ? "active" : "")" href="@Url.Action("EmployeesList", "Admin")">Employees list</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewBag.ControllerName == "Admin" && ViewBag.ActionName == "MonthlyReport" ? "active" : "")" href="@Url.Action("MonthlyReport", "Admin")">Reports</a>
+                            </li>
+                            @*<li class="nav-item">
+                                <a class="nav-link @(ViewBag.ControllerName == "Admin" && ViewBag.ActionName == "Index" ? "active" : "")" href="#">Password</a>
+                            </li>*@
+
+                            <li class="nav-item"><a class="nav-link">Two-factor authentication</a></li>
+                            <li class="nav-item"><a class="nav-link">Personal data</a></li>
+                            <li class="nav-item"><a class="nav-link">Rent history</a></li>
+                        </ul>
+
+                    </div>
+                    <div class="col-md-9">
+                        @RenderBody()
+
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2023 - GearRent - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
