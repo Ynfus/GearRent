@@ -44,44 +44,6 @@ namespace GearRent.Controllers
             _emailSender = emailSender;
             _employeeService = employeeService;
         }
-        [HttpGet]
-        public async Task<IActionResult> CarList(int? pageNumber)
-        {
-            //var carList = from r in _context.Cars
-            //              select r;
-
-            var carList = _carService.GetAllCarsAsyncQueryable();
-            int pageSize = 3;
-            var paginatedCars = await PaginatedList<Car>.CreateAsync(carList.AsNoTracking(), pageNumber ?? 1, pageSize);
-
-            return View(paginatedCars);
-        }
-        public IActionResult AddCar()
-        {
-            var tagItems = Enum.GetValues(typeof(CarTag))
-                .Cast<CarTag>()
-                .Select(t => new SelectListItem
-                {
-                    Value = ((int)t).ToString(),
-                    Text = t.ToString()
-                })
-                .ToList();
-            ViewBag.CarTags = tagItems;
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddCar([Bind("Id,Make,Model,Year,Color,NumberOfSeats,EngineSize,Available,PhotoLink,Tag")] Car car)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(car);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(car);
-        }
         public async Task<IActionResult> Index(int? pageNumber)
         {
             var upcomingReservations = from r in _context.Reservations
@@ -93,80 +55,6 @@ namespace GearRent.Controllers
             int pageSize = 3;
 
             return View(await PaginatedList<Reservation>.CreateAsync(upcomingReservations.AsNoTracking(), pageNumber ?? 1, pageSize));
-        }
-
-        public async Task<IActionResult> EditCar(int? id)
-        {
-            if (id == null || _context.Cars == null)
-            {
-                return NotFound();
-            }
-
-            var car = await _context.Cars.FindAsync(id);
-            if (car == null)
-            {
-                return NotFound();
-            }
-            return View(car);
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditCar(int id, [Bind("Id,Make,Model,Year,Color,NumberOfSeats,EngineSize,Available,PhotoLink")] Car car)
-        {
-            if (id != car.Id)
-            {
-                return NotFound();
-            }
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(car);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CarExists(car.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(CarList));
-            }
-            return View(car);
-        }
-        [HttpGet]
-        public async Task<IActionResult> CarReservations(int id, int? pageNumber)
-        {
-            var carReservations = _context.Reservations
-                .Where(r => r.CarId == id)
-                .AsQueryable();
-
-            var car = _context.Cars.Find(id);
-
-            if (carReservations == null || car == null)
-            {
-                return NotFound();
-            }
-
-            var carReservationViewModels = carReservations.Select(r => new CarReservationsViewModel
-            {
-                CarMake = car.Make,
-                CarModel = car.Model,
-                CarYear = car.Year,
-                UserId = r.UserId,
-                StartDate = r.StartDate.Date,
-                EndDate = r.EndDate
-            }).AsQueryable();
-
-            int pageSize = 3;
-            var paginatedReservations = await PaginatedList<CarReservationsViewModel>.CreateAsync(carReservationViewModels, pageNumber ?? 1, pageSize);
-
-            return View(paginatedReservations);
         }
 
         [HttpDelete]
@@ -183,25 +71,7 @@ namespace GearRent.Controllers
 
             return NoContent();
         }
-        [HttpDelete]
-        public async Task<IActionResult> DeleteReservation(int id)
-        {
-            var reservation = await _reservationService.GetReservationByIdAsync(id);
-            if (reservation == null)
-            {
-                return NotFound();
-            }
 
-            _context.Reservations.Remove(reservation);
-            var email = await _userService.GetUserEmailByIdAsync(reservation.UserId);
-            var car = await _carService.GetCarEmailByIdAsync(reservation.CarId);
-            var subject = $"Anulacja rezerwacji {reservation.Id}";
-            var body = $"Twoja rezerwacja na {car.Make} {car.Model} na okres {reservation.StartDate.Date.ToShortDateString()} - {reservation.EndDate.Date.ToShortDateString()} została anulowana.\nW razie problemów prosimy o kontakt \nPozdrawiam";
-            _emailSender.SendEmailAsync(email,subject,body);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
         private bool CarExists(int id)
         {
             return (_context.Cars?.Any(e => e.Id == id)).GetValueOrDefault();

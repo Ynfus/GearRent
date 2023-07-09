@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GearRent.Data;
 using GearRent.Models;
-using Azure;
 using GearRent.PaginatedList;
-using System.Drawing.Printing;
 using GearRent.Services;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace GearRent.Controllers
 {
@@ -20,14 +15,19 @@ namespace GearRent.Controllers
         private readonly ApplicationDbContext _context;
 
         private readonly ICarService _carService;
+        private readonly IReservationService _reservationService;
+        private readonly IEmailSender _emailSender;
+        private readonly IUserService _userService;
 
-        public CarsController(ApplicationDbContext context, ICarService carService)
+        public CarsController(ApplicationDbContext context, ICarService carService, IReservationService reservationService, IEmailSender emailSender, IUserService userService)
         {
             _context = context;
             _carService = carService;
+            _reservationService = reservationService;
+            _emailSender = emailSender;
+            _userService = userService;
         }
 
-        //GET: Cars
         public async Task<IActionResult> List(int? pageNumber)
         {
             int pageSize = 6;
@@ -49,52 +49,7 @@ namespace GearRent.Controllers
             int pageSize = 3;
             return View(await PaginatedList<Car>.CreateAsync(cars, pageNumber ?? 1, pageSize));
         }
-        //public async Task<IActionResult> Index1(string sortOrder, DateTime? startDate, DateTime? endDate, int? pageNumber, CarTag? selectedCarTag, string? selectedColor)
-        //{
-        //    ViewBag.PriceSortParm = String.IsNullOrEmpty(sortOrder) ? "price_desc" : "";
-        //    ViewBag.NameSortParm = sortOrder == "name" ? "name_desc" : "name";
-        //    var cars = from c in _context.Cars
-        //               select c;
-        //    ViewBag.CarTags = Enum.GetValues(typeof(CarTag));
 
-        //    var colors = _context.Cars.Select(c => c.Color).Distinct().ToList();
-        //    ViewBag.Colors = colors;
-
-        //    if (startDate != null && endDate != null)
-        //    {
-        //        cars = cars.Where(c => c.Reservations.All(r => r.EndDate < startDate || r.StartDate > endDate));
-        //    }
-        //    if (!string.IsNullOrEmpty(selectedColor))
-        //    {
-        //        cars = cars.Where(c => c.Color == selectedColor);
-        //    }
-        //    if (selectedCarTag.HasValue)
-        //    {
-        //        var tag = selectedCarTag;
-        //        cars = cars.Where(c => c.Tag == tag);
-        //    }
-        //    switch (sortOrder)
-        //    {
-        //        case "price_desc":
-        //            cars = cars.OrderByDescending(c => c.Price);
-        //            break;
-        //        case "name":
-        //            cars = cars.OrderBy(c => c.Make);
-        //            break;
-        //        case "name_desc":
-        //            cars = cars.OrderByDescending(c => c.Make);
-        //            break;
-        //        default:
-        //            cars = cars.OrderBy(c => c.Price);
-        //            break;
-        //    }
-        //    int pageSize = 3;
-        //    return View(await PaginatedList<Car>.CreateAsync(cars.AsNoTracking(), pageNumber ?? 1, pageSize));
-        //}
-
-
-
-        // GET: Cars/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Cars == null)
@@ -112,30 +67,63 @@ namespace GearRent.Controllers
             return View(car);
         }
 
-        // GET: Cars/Create
         public IActionResult Create()
         {
             return View();
         }
-
-        // POST: Cars/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Make,Model,Year,Color,NumberOfSeats,EngineSize,Available,PhotoLink")] Car car)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(car);
-                await _context.SaveChangesAsync();
+                await _carService.AddCarAsync(car);
                 return RedirectToAction(nameof(Index));
             }
+
             return View(car);
         }
 
-        // GET: Cars/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        private bool CarExists(int id)
+        {
+            return (_context.Cars?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+        public IActionResult AddCar()
+        {
+            var tagItems = Enum.GetValues(typeof(CarTag))
+                .Cast<CarTag>()
+                .Select(t => new SelectListItem
+                {
+                    Value = ((int)t).ToString(),
+                    Text = t.ToString()
+                })
+                .ToList();
+            ViewBag.CarTags = tagItems;
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddCar(/*[Bind("Id,Make,Model,Year,Color,NumberOfSeats,EngineSize,Available,PhotoLink,Tag")]*/ Car car)
+        {
+            if (ModelState.IsValid)
+            {
+                await _carService.AddCarAsync(car);
+
+                return RedirectToAction("CarList", "Admin");
+            }
+            return View(car);
+        }
+        [HttpGet]
+        public async Task<IActionResult> CarList(int? pageNumber)
+        {
+            var carList = _carService.GetAllCarsAsyncQueryable();
+            int pageSize = 3;
+            var paginatedCars = await PaginatedList<Car>.CreateAsync(carList.AsNoTracking(), pageNumber ?? 1, pageSize);
+
+            return View(paginatedCars);
+        }
+        public async Task<IActionResult> EditCar(int? id)
         {
             if (id == null || _context.Cars == null)
             {
@@ -149,19 +137,14 @@ namespace GearRent.Controllers
             }
             return View(car);
         }
-
-        // POST: Cars/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Make,Model,Year,Color,NumberOfSeats,EngineSize,Available,PhotoLink")] Car car)
+        public async Task<IActionResult> EditCar(int id, Car car)
         {
             if (id != car.Id)
             {
                 return NotFound();
             }
-
             if (ModelState.IsValid)
             {
                 try
@@ -180,51 +163,57 @@ namespace GearRent.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("CarList", "Cars");
             }
             return View(car);
         }
-
-        // GET: Cars/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        [HttpGet]
+        public async Task<IActionResult> CarReservations(int id, int? pageNumber)
         {
-            if (id == null || _context.Cars == null)
+            var carReservations = _context.Reservations
+                .Where(r => r.CarId == id)
+                .AsQueryable();
+
+            var car = _context.Cars.Find(id);
+
+            if (carReservations == null || car == null)
             {
                 return NotFound();
             }
 
-            var car = await _context.Cars
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (car == null)
+            var carReservationViewModels = carReservations.Select(r => new CarReservationsViewModel
+            {
+                CarMake = car.Make,
+                CarModel = car.Model,
+                CarYear = car.Year,
+                UserId = r.UserId,
+                StartDate = r.StartDate.Date,
+                EndDate = r.EndDate
+            }).AsQueryable();
+
+            int pageSize = 3;
+            var paginatedReservations = await PaginatedList<CarReservationsViewModel>.CreateAsync(carReservationViewModels, pageNumber ?? 1, pageSize);
+
+            return View(paginatedReservations);
+        }
+        [HttpDelete]
+        public async Task<IActionResult> DeleteReservation(int id)
+        {
+            var reservation = await _reservationService.GetReservationByIdAsync(id);
+            if (reservation == null)
             {
                 return NotFound();
             }
 
-            return View(car);
-        }
-
-        // POST: Cars/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.Cars == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Cars'  is null.");
-            }
-            var car = await _context.Cars.FindAsync(id);
-            if (car != null)
-            {
-                _context.Cars.Remove(car);
-            }
-
+            _context.Reservations.Remove(reservation);
+            var email = await _userService.GetUserEmailByIdAsync(reservation.UserId);
+            var car = await _carService.GetCarEmailByIdAsync(reservation.CarId);
+            var subject = $"Anulacja rezerwacji {reservation.Id}";
+            var body = $"Twoja rezerwacja na {car.Make} {car.Model} na okres {reservation.StartDate.Date.ToShortDateString()} - {reservation.EndDate.Date.ToShortDateString()} została anulowana.\nW razie problemów prosimy o kontakt \nPozdrawiam";
+            _emailSender.SendEmailAsync(email, subject, body);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
 
-        private bool CarExists(int id)
-        {
-            return (_context.Cars?.Any(e => e.Id == id)).GetValueOrDefault();
+            return NoContent();
         }
     }
 }
