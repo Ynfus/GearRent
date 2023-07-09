@@ -14,6 +14,7 @@ namespace GearRent.Services
         Task<CarEmailViewModel> GetCarEmailByIdAsync(int carId);
         IQueryable<Car> GetFilteredCarsAsync(DateTime? startDate, DateTime? endDate, CarTag? selectedCarTag, string? selectedColor);
         Task<List<string>> GetCarColorsAsync();
+        Task AddCarAsync(Car car);
     }
 
     public class CarService : ICarService
@@ -71,6 +72,11 @@ namespace GearRent.Services
         public async Task<List<string>> GetCarColorsAsync()
         {
             return await _context.Cars.Select(c => c.Color).Distinct().ToListAsync();
+        }
+        public async Task AddCarAsync(Car car)
+        {
+            _context.Add(car);
+            await _context.SaveChangesAsync();
         }
 
     }
