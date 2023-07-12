@@ -6,6 +6,8 @@ using GearRent.PaginatedList;
 using GearRent.Services;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace GearRent.Controllers
 {
@@ -18,14 +20,16 @@ namespace GearRent.Controllers
         private readonly IReservationService _reservationService;
         private readonly IEmailSender _emailSender;
         private readonly IUserService _userService;
+        private readonly IWebHostEnvironment _IWebHostEnvironment;
 
-        public CarsController(ApplicationDbContext context, ICarService carService, IReservationService reservationService, IEmailSender emailSender, IUserService userService)
+        public CarsController(ApplicationDbContext context, ICarService carService, IReservationService reservationService, IEmailSender emailSender, IUserService userService, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             _carService = carService;
             _reservationService = reservationService;
             _emailSender = emailSender;
             _userService = userService;
+            _IWebHostEnvironment = webHostEnvironment;
         }
 
         public async Task<IActionResult> List(int? pageNumber)
@@ -104,13 +108,28 @@ namespace GearRent.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddCar(/*[Bind("Id,Make,Model,Year,Color,NumberOfSeats,EngineSize,Available,PhotoLink,Tag")]*/ Car car)
+        public async Task<IActionResult> AddCar( Car car)
         {
+
             if (ModelState.IsValid)
             {
+                if (car.PhotoFile != null && car.PhotoFile.Length > 0)
+                {
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(car.PhotoFile.FileName);
+
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", fileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await car.PhotoFile.CopyToAsync(fileStream);
+                    }
+
+                    car.PhotoLink = "/wwwroot/uploads/" + fileName;
+                }
+
                 await _carService.AddCarAsync(car);
 
-                return RedirectToAction("CarList", "Admin");
+                return RedirectToAction("CarList", "Cars");
             }
             return View(car);
         }

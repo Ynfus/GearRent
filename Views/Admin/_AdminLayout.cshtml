@@ -53,23 +53,25 @@
                 <div class="row">
                     <div class="col-md-3">
                         <ul class="nav nav-pills flex-column">
-                            <li class="nav-item  ">
-                                <a class="nav-link  @(ViewBag.ControllerName == "Admin" && ViewBag.ActionName == "Index" ? "active" : "")" href="./index">Upcoming bookings</a>
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewBag.ControllerName == "Admin" && ViewBag.ActionName == "Index" ? "active" : "")" href="@Url.Action("Index", "Admin")">Upcoming bookings</a>
                             </li>
-                            <li class="nav-item  ">
-                                <a class="nav-link  @(ViewBag.ControllerName == "Admin" && ViewBag.ActionName == "CarList" ? "active" : "")" href="./carList">Car list</a>
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewBag.ControllerName == "Cars" && (ViewBag.ActionName == "CarList" || ViewBag.ActionName == "AddCar" || ViewBag.ActionName == "EditCar" || ViewBag.ActionName == "CarReservation") ? "active" : "")" href="@Url.Action("CarList", "Cars")">Car list</a>
                             </li>
-                            <li class="nav-item  ">
-                                <a class="nav-link  @(ViewBag.ControllerName == "Admin" && ViewBag.ActionName == "EmployeesList" ? "active" : "")" href="./employeesList">Employees list</a>
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewBag.ControllerName == "Admin" && ViewBag.ActionName == "EmployeesList" ? "active" : "")" href="@Url.Action("EmployeesList", "Admin")">Employees list</a>
                             </li>
-                            <li class="nav-item  ">
-                                <a class="nav-link  @(ViewBag.ControllerName == "Admin" && ViewBag.ActionName == "MonthlyReport" ? "active" : "")" href="./monthlyReport">Raports</a>
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewBag.ControllerName == "Admin" && ViewBag.ActionName == "MonthlyReport" ? "active" : "")" href="@Url.Action("MonthlyReport", "Admin")">Reports</a>
                             </li>
-                            <li class="nav-item @(ViewBag.ControllerName == "Admin" && ViewBag.ActionName == "Index" ? "active" : "")"><a class="nav-link">Password</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewBag.ControllerName == "Admin" && ViewBag.ActionName == "Password" ? "active" : "")" href="#">Password</a>
+                            </li>
 
                             <li class="nav-item"><a class="nav-link">Two-factor authentication</a></li>
                             <li class="nav-item"><a class="nav-link">Personal data</a></li>
-                            <li class="nav-item"><a class="nav-link" >Rent history</a></li>
+                            <li class="nav-item"><a class="nav-link">Rent history</a></li>
                         </ul>
 
                     </div>

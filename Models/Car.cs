@@ -1,5 +1,6 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GearRent.Models
 {
@@ -34,6 +35,10 @@ namespace GearRent.Models
         public ICollection<Reservation>? Reservations { get; set; }
 
         public CarTag Tag { get; set; }
+
+        [NotMapped]
+        [Display(Name = "Photo")]
+        public IFormFile PhotoFile { get; set; }
     }
 
 

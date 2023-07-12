@@ -1,6 +1,7 @@
 ﻿using GearRent.Data;
 using GearRent.Data.Migrations;
 using GearRent.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -75,6 +76,7 @@ namespace GearRent.Services
         }
         public async Task AddCarAsync(Car car)
         {
+
             _context.Add(car);
             await _context.SaveChangesAsync();
         }
