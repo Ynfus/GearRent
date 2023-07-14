@@ -124,7 +124,7 @@ namespace GearRent.Controllers
                         await car.PhotoFile.CopyToAsync(fileStream);
                     }
 
-                    car.PhotoLink = "/wwwroot/uploads/" + fileName;
+                    car.PhotoLink = "/uploads/" + fileName;
                 }
 
                 await _carService.AddCarAsync(car);
