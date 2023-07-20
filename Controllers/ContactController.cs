@@ -1,11 +1,19 @@
 ﻿using GearRent.Models;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 using System.Net.Mail;
 
 namespace GearRent.Controllers
 {
     public class ContactController : Controller
     {
+        private readonly IEmailSender _emailSender;
+        public ContactController(IEmailSender emailSender)
+        {
+            _emailSender = emailSender;
+        }
+
         public IActionResult Index()
         {
             if (User != null && User.Identity.IsAuthenticated)
@@ -22,19 +30,7 @@ namespace GearRent.Controllers
         [HttpPost]
         public ActionResult Index(ContactViewModel contactViewModel)
         {
-            //var mail = new MailMessage();
-            //mail.From = new MailAddress("");
-            //mail.To.Add("info@GearRent.pl");
-            //mail.Subject = "Wiadomość z formularza kontaktowego";
-            //mail.Body = $"Imię i nazwisko: {name}\nAdres e-mail: {email}\nNumer telefonu: {phone}\n\n{message}";
-
-            //var smtp = new SmtpClient();
-            //smtp.Host = "";
-            //smtp.Port = 587;
-            //smtp.Credentials = new System.Net.NetworkCredential("username", "password");
-            //smtp.EnableSsl = true;
-
-            //smtp.Send(mail);
+            _emailSender.SendEmailAsync(contactViewModel.Email,"Wiadomość z formularza kontaktowego "+ DateTime.Now.ToString() ,contactViewModel.Message+"\n"+contactViewModel.Name);
             TempData["messageSent"] = true;
 
             return RedirectToAction("Index");
