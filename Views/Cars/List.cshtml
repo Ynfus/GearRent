@@ -10,13 +10,19 @@
     <div class="row car-grid">
         @foreach (var car in Model)
         {
-            <div class="col-sm-6 col-md-4 col-lg-3 car-item">
-                <img src="@car.PhotoLink" />
-                <div class="car-details">
-                    <h5>@car.Make @car.Model</h5>
-                    <p>@car.Year</p>
-                    <div>
-                        <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="btn btn-primary">Szczegóły</a>
+            <div class="col-12 car-item">
+                <div class="row">
+                    <div class="col-md-6">
+                        <img src="@car.PhotoLink" class="car-image" />
+                    </div>
+                    <div class="col-md-6">
+                        <div class="car-details">
+                            <h5>@car.Make @car.Model</h5>
+                            <p>@car.Year</p>
+                            <div>
+                                <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="btn btn-primary">Szczegóły</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

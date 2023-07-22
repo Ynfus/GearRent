@@ -2,12 +2,41 @@
     ViewData["Title"] = "Home Page";
 }
 <style>
-    .founder-card {
+    .team-member {
+        text-align: center;
+        padding: 20px;
+        background-color: #fff;
         border-radius: 10px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        margin-bottom: 30px;
+        margin: 20px;
+        width: 100%;
+        height: 800px;
     }
+
+        .team-member img {
+            border-radius: 10%;
+            margin-bottom: 10px;
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+        }
+
+        .team-member h3 {
+            margin-bottom: 10px;
+        }
+
+
+        .team-member p {
+            color: #777;
+        }
+
+        .team-member .member-description {
+            display: block;
+        }
+
+        .team-member:hover .member-description {
+            display: block;
+        }
 </style>
 @*<div class="container-fluid">
     <div class="row justify-content-center flex-wrap">
@@ -25,6 +54,86 @@
         </div>
     </div>
 </div>*@
+
+
+
+<section class="container mt-8">
+    <h1 class="text-center mb-4">Our Team</h1>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="team-member">
+                <img src="~/portret.jpg" alt="Team Member 3">
+                <h3>John Doe</h3>
+                <p>CO-FOUNDER</p>
+                <div class="member-description">
+                    <h5>
+                        Co-founder of the company. Experienced entrepreneur with a passion for innovation.
+                    </h5>
+                    <div class="social-icons">
+                        <div class="email-container">
+                            <h6 class="email-link m-5">
+                                john.doe@example1.com                            <button class="btn">
+                                    <svg class="bi bi-clipboard clipboard-icon mb-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z" />
+                                        <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5                           1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z" />
+                                    </svg>
+                                </button>
+                            </h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="team-member">
+                <img src="~/portret.jpg" alt="Team Member 3">
+                <h3>Jane Smith</h3>
+                <p>CEO</p>
+                <div class="member-description">
+                    <h5>
+                        CEO of the company. Visionary leader with a strong focus on customer satisfaction.
+                    </h5>
+                    <div class="social-icons">
+                        <div class="email-container">
+                            <h6 class="email-link m-5">
+                                john.doe@example1.com                            <button class="btn">
+                                    <svg class="bi bi-clipboard clipboard-icon mb-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z" />
+                                        <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5                           1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z" />
+                                    </svg>
+                                </button>
+                            </h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="team-member">
+                <img src="~/portret.jpg" alt="Team Member 3">
+                <h3>Michael Johnson</h3>
+                <p>CTO</p>
+                <div class="member-description">
+                    <h5>
+                        CTO of the company. Technology enthusiast always seeking new challenges.
+                    </h5>
+                    <div class="social-icons">
+                        <div class="email-container m-5">
+                            <h6 class="email-link">
+                                michael.johnson@gearrent.com                            <button class="btn">
+                                    <svg class="bi bi-clipboard clipboard-icon mb-1" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z" />
+                                        <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5                           1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z" />
+                                    </svg>
+                                </button>
+                            </h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 <div class="container-fluid">
     <div class="row justify-content-center flex-wrap">
         <div class="col-lg-4 col-md-6 col-sm-12 d-flex justify-content-center" onclick="window.location.href='/kontakt'" style="flex-basis: 50%; margin-top: 10px;">
@@ -53,32 +162,18 @@
         </div>
     </div>
 </div>
-  <section class="container">
-        <h1 class="text-center mt-5">O nas</h1>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="founder-card">
-                <img src="~/portret3.jpg" alt="Founder 1" class="img-fluid mb-3 founder-img">
-                    <h3>Jan Kowalski</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ullamcorper massa at turpis fermentum, nec consequat est sollicitudin.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="founder-card">
-                <img src="~/portret.jpg" alt="Founder 2" class="img-fluid mb-3 founder-img">
-                    <h3>Anna Nowak</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ullamcorper massa at turpis fermentum, nec consequat est sollicitudin.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="founder-card">
-                    <img src="~/portret2.jpg" alt="Founder 3" class="img-fluid mb-3 founder-img">
-                    <h3>Marcin Kowalczyk</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ullamcorper massa at turpis fermentum, nec consequat est sollicitudin.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+
+
+
+
+
+
+
+
 <script>
     const bgImages = document.querySelectorAll('.bg-image');
 
@@ -86,4 +181,26 @@
         const imageUrl = bgImage.getAttribute('data-image');
         bgImage.style.backgroundImage = `url('${imageUrl}')`;
     });
+    const emailContainers = document.querySelectorAll('.email-container');
+
+    emailContainers.forEach(emailContainer => {
+        const emailLink = emailContainer.querySelector('.email-link');
+        const clipboardIcon = emailContainer.querySelector('.clipboard-icon');
+
+        clipboardIcon.addEventListener('click', function (event) {
+            event.preventDefault();
+            const emailAddress = emailLink.innerText;
+            copyToClipboard(emailAddress);
+        });
+    });
+
+    function copyToClipboard(text) {
+        const tempInput = document.createElement('input');
+        tempInput.value = text;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        alert('Email address copied to clipboard!');
+    }
 </script>
