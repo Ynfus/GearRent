@@ -30,6 +30,15 @@ namespace GearRent.Models
 
         public bool Available { get; set; }
 
+        [EnumDataType(typeof(FuelType), ErrorMessage = "Invalid fuel type.")]
+        public string FuelType { get; set; }
+
+        [Range(0.1, 30, ErrorMessage = "Acceleration must be a positive value.")]
+        public float Acceleration { get; set; }
+
+        [Range(0.1, 100, ErrorMessage = "Fuel consumption must be a positive value.")]
+        public float FuelConsumption { get; set; }
+
         public string PhotoLink { get; set; }
 
         public ICollection<Reservation>? Reservations { get; set; }
@@ -39,6 +48,7 @@ namespace GearRent.Models
         [NotMapped]
         [Display(Name = "Photo")]
         public IFormFile PhotoFile { get; set; }
+
     }
 
 
