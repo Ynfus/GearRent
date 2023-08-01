@@ -143,6 +143,21 @@ namespace GearRent.Controllers
 
             return View(reportData);
         }
+        public ActionResult YearlyReportGet(int year)
+        {
+            var monthlyReportData = _context.Reservations
+                .Where(r => r.EndDate.Year == year)
+                .GroupBy(r => r.EndDate.Month)
+                .Select(group => new
+                {
+                    Month = new DateTime(year, group.Key, 1).ToString("MMMM"), 
+                    Reservations = group.Count(),
+                    Revenue = group.Sum(r => r.ReservationValue)
+                })
+                .ToList();
+
+            return Json(monthlyReportData);
+        }
         public IActionResult MonthlyReportGet(int year, int month)
         {
             var reservations = _context.Reservations
