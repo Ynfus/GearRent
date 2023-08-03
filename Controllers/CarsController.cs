@@ -77,7 +77,7 @@ namespace GearRent.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Make,Model,Year,Color,NumberOfSeats,EngineSize,Available,PhotoLink")] Car car)
+        public async Task<IActionResult> Create(Car car)
         {
             if (ModelState.IsValid)
             {
@@ -102,13 +102,22 @@ namespace GearRent.Controllers
                     Text = t.ToString()
                 })
                 .ToList();
+            var fuelItems = Enum.GetValues(typeof(FuelType))
+                .Cast<FuelType>()
+                .Select(t => new SelectListItem
+                {
+                    Value = ((int)t).ToString(),
+                    Text = t.ToString()
+                })
+                .ToList();
             ViewBag.CarTags = tagItems;
+            ViewBag.FuelType = fuelItems;
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddCar( Car car)
+        public async Task<IActionResult> AddCar(Car car)
         {
 
             if (ModelState.IsValid)
