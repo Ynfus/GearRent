@@ -1,4 +1,5 @@
-﻿@model GearRent.Models.Car
+﻿@using GearRent.Models;
+@model GearRent.Models.Car
 
 @{
     Layout = "./_AdminLayout";
@@ -46,13 +47,12 @@
                 <span asp-validation-for="EngineSize" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FuelType" class="control-label">Fuel Type</label>
+                <label asp-for="FuelType">Fuel Type</label>
                 <select asp-for="FuelType" class="form-control">
-                    <option value="Petrol">Petrol</option>
-                    <option value="Diesel">Diesel</option>
-                    <option value="LPG">LPG</option>
-                    <option value="Electric">Electric</option>
-                    <option value="Hybrid">Hybrid</option>
+                    @foreach (var item in Enum.GetValues(typeof(FuelType)))
+                    {
+                        <option value="@item">@item</option>
+                    }
                 </select>
                 <span asp-validation-for="FuelType" class="text-danger"></span>
             </div>
@@ -84,7 +84,7 @@
 
             <div class="form-group">
                 <label asp-for="Tag">Tag</label>
-                <select asp-for="Tag" asp-items="@ViewBag.CarTags" class="form-control">
+                <select asp-for="Tag" class="form-control">
                     @foreach (var item in Enum.GetValues(typeof(CarTag)))
                     {
                         <option value="@((int)item)">@item</option>
@@ -92,7 +92,7 @@
                 </select>
                 <span asp-validation-for="Tag" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mt-2">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>

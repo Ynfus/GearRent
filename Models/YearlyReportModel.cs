@@ -2,7 +2,7 @@
 {
     public class YearlyReportModel
     {
-        public string Month { get; set; }
+        public int Month { get; set; }
         public int Reservations { get; set; }
         public decimal Revenue { get; set; }
     }
