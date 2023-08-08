@@ -1,4 +1,4 @@
-﻿@using GearRent.PaginatedList;
+﻿@using GearRent.PaginatedList;w
 @model PaginatedList<GearRent.Models.Car>
 
 @{
@@ -6,103 +6,10 @@
 }
 
 
-@*<div class="container">
-    <div class="row car-grid">
-        @foreach (var car in Model)
-        {
-            <div class="col-sm-6 col-md-4 col-lg-3 car-item">
-                <img src="@car.PhotoLink" />
-                <div class="car-details">
-                    <h5>@car.Make @car.Model</h5>
-                    <p>@car.Year</p>
-                    <div>
-                        <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="btn btn-primary">Szczegóły</a>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
-</div>*@
-
-@*// ///////////////////////
-*@
-@*<form method="get">
-    <label for="startDate">Start date:</label>
-    <input type="date" name="startDate" id="startDate">
-
-    <label for="endDate">End date:</label>
-    <input type="date" name="endDate" id="endDate">
-
-    <label for="selectedCarTag">Car Tag:</label>
-    <select name="selectedCarTag" id="selectedCarTag">
-        <option value="">All</option>
-        @foreach (var carTag in Enum.GetValues(typeof(CarTag)))
-        {
-            <option value="@carTag">@carTag</option>
-        }
-    </select>
-    <select name="selectedColor" id="selectedColor">
-        <option value="">All</option>
-        @foreach (var color in ViewBag.Colors)
-        {
-            <option value="@color">@color</option>
-        }
-    </select>
-    <button type="submit">Filter</button>
-</form>
-
-<table class="table">
-    <tr>
-        <th>
-            @Html.ActionLink("Price", "Index", new { sortOrder = ViewBag.PriceSortParm })
-        </th>
-
-        <th>
-            @Html.ActionLink("Make", "Index", new { sortOrder = ViewBag.NameSortParm })
-        </th>
-        <th></th>
-    </tr>
-
-    @foreach (var car in Model)
-    {
-        <div class="col-sm-6 col-md-4 col-lg-3 car-item">
-
-            <img src="@car.PhotoLink" />
-            <div class="car-details">
-                <h5>@car.Make @car.Model</h5>
-                <p>@car.Year</p>
-                <div>
-                    <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="btn btn-primary">Szczegóły</a>
-                </div>
-            </div>
-        </div>
-    }
-</table>
-@{
-    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
-    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
-}
-
-<a asp-action="Index"
-   asp-route-sortOrder="@ViewData["CurrentSort"]"
-   asp-route-pageNumber="@(Model.PageIndex - 1)"
-   asp-route-currentFilter="@ViewData["CurrentFilter"]"
-   class="btn btn-default @prevDisabled">
-    Previous
-</a>
-<a asp-action="Index"
-   asp-route-sortOrder="@ViewData["CurrentSort"]"
-   asp-route-pageNumber="@(Model.PageIndex + 1)"
-   asp-route-currentFilter="@ViewData["CurrentFilter"]"
-   class="btn btn-default @nextDisabled">
-    Next
-</a>*@
-
-
 <div class="container">
     <div class="row">
         <div class="col-lg-3 mt-4 d-flex justify-content-left">
-            <form method="get">
+            <form method="get" action="/Cars/FilteredResults">
                 <div class="form-group">
                     <label for="startDate">Start date:</label>
                     <input type="date" class="form-control" name="startDate" id="startDate" min="@DateTime.Now.ToString("yyyy-MM-dd")">
@@ -135,24 +42,55 @@
                     </select>
                 </div>
 
+                <div class="form-group">
+                    <label for="fuelConsumption-range-label">Fuel Consumption Range (l/100km):</label>
+                    <div id="fuelConsumption-range-label"></div>
+                </div>
+                <div class="form-group">
+                    <div id="fuelConsumption-range-slider"></div>
+                </div>
+                <div class="form-group">
+                    <label for="engineCapacity-range-label">Engine Capacity Range (cc):</label>
+                    <div id="engineCapacity-range-label"></div>
+                </div>
+                <div class="form-group">
+                    <div id="engineCapacity-range-slider"></div>
+                </div>
+                <div class="form-group">
+                    <label for="acceleration-range-label">Acceleration Range (0-100 km/h in seconds):</label>
+                    <div id="acceleration-range-label"></div>
+                </div>
+                <div class="form-group">
+                    <div id="acceleration-range-slider"></div>
+                </div>
+                <div class="form-group">
+                    <label for="price-range-label">Price Range :</label>
+                    <div id="price-range-label"></div>
+                </div>
+                <div class="form-group">
+                    <div id="price-range-slider"></div>
+                </div>
                 <button type="submit" class="btn btn-primary mt-2">Filter</button>
+                <h4 id="filtertext">111</h4>
             </form>
         </div>
 
         <div class="col-lg-9 mt-2">
-            @foreach (var car in Model)
-            {
-                <div class="row row-car mb-4">
-                    <div class="col-md-5">
-                        <img src="@car.PhotoLink" class="img-fluid car-image col-md-5" alt="@car.Make @car.Model">
+            <div id="filteredResults">
+                @foreach (var car in Model)
+                {
+                    <div class="row row-car mb-4">
+                        <div class="col-md-5">
+                            <img src="@car.PhotoLink" class="img-fluid car-image col-md-5" alt="@car.Make @car.Model">
+                        </div>
+                        <div class="col-md-7">
+                            <h5 class="card-title">@car.Make @car.Model</h5>
+                            <p class="card-text">Price: @car.Price</p>
+                            <a href="" id="order-link-@car.Id" class="btn btn-primary order-link" data-car-id="@car.Id">Order</a>
+                        </div>
                     </div>
-                    <div class="col-md-7">
-                        <h5 class="card-title">@car.Make @car.Model</h5>
-                        <p class="card-text">Price: @car.Price</p>
-                        <a href="" id="order-link-@car.Id" class="btn btn-primary order-link" data-car-id="@car.Id">Order</a>
-                    </div>
-                </div>
-            }
+                }
+            </div>
             @{
                 var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
                 var nextDisabled = !Model.HasNextPage ? "disabled" : "";
@@ -179,6 +117,127 @@
     </div>
 </div>
 <script>
+    $(document).ready(function () {
+
+        var minFuelConsumption = 0.1;
+        var maxFuelConsumption = 10;
+
+        $('#fuelConsumption-range-label').text(minFuelConsumption + ' - ' + maxFuelConsumption);
+
+        $("#fuelConsumption-range-slider").slider({
+            range: true,
+            min: 0,
+            max: 20,
+            step: 0.1,
+            values: [minFuelConsumption, maxFuelConsumption],
+            slide: function (event, ui) {
+                $('#fuelConsumption-range-label').text(ui.values[0] + ' - ' + ui.values[1]);
+                $('#fuelConsumptionMin').val(ui.values[0]);
+                $('#fuelConsumptionMax').val(ui.values[1]);
+            }
+        });
+
+        var minEngineCapacity = 1;
+        var maxEngineCapacity = 6;
+
+        $('#engineCapacity-range-label').text(minEngineCapacity + ' - ' + maxEngineCapacity);
+
+        $("#engineCapacity-range-slider").slider({
+            range: true,
+            min: 0,
+            max: 12,
+            step: 0.1,
+            values: [minEngineCapacity, maxEngineCapacity],
+            slide: function (event, ui) {
+                $('#engineCapacity-range-label').text(ui.values[0] + ' - ' + ui.values[1]);
+                $('#engineCapacityMin').val(ui.values[0]);
+                $('#engineCapacityMax').val(ui.values[1]);
+            }
+        });
+
+        var minAcceleration = 3;
+        var maxAcceleration = 15;
+
+        $('#acceleration-range-label').text(minAcceleration + ' - ' + maxAcceleration);
+
+        $("#acceleration-range-slider").slider({
+            range: true,
+            min: 0,
+            max: 30,
+            step: 0.1,
+            values: [minAcceleration, maxAcceleration],
+            slide: function (event, ui) {
+                $('#acceleration-range-label').text(ui.values[0] + ' - ' + ui.values[1]);
+                $('#accelerationMin').val(ui.values[0]);
+                $('#accelerationMax').val(ui.values[1]);
+            }
+        });
+
+        var minPrice = 200;
+        var maxPrice = 1500;
+
+        $('#price-range-label').text(minPrice + ' - ' + maxPrice);
+
+        $("#price-range-slider").slider({
+            range: true,
+            min: 100,
+            max: 2000,
+            step: 0.1,
+            values: [minPrice, maxPrice],
+            slide: function (event, ui) {
+                $('#price-range-label').text(ui.values[0] + ' - ' + ui.values[1]);
+                $('#priceMin').val(ui.values[0]);
+                $('#priceMin').val(ui.values[1]);
+            }
+        });
+    });
+    ////
+    filterButton = document.getElementById('filtertext');
+    filterButton.addEventListener('click', function () {
+        const startDate = document.querySelector('#startDate').value;
+        const endDate = document.querySelector('#endDate').value;
+        const selectedCarTag = document.querySelector('#selectedCarTag').value;
+        const selectedColor = document.querySelector('#selectedColor').value;
+
+        const minFuelConsumption = parseFloat(document.querySelector('#fuelConsumption-range-label').textContent.split(' - ')[0]);
+        const maxFuelConsumption = parseFloat(document.querySelector('#fuelConsumption-range-label').textContent.split(' - ')[1]);
+
+        const minEngineCapacity = parseFloat(document.querySelector('#engineCapacity-range-label').textContent.split(' - ')[0]);
+        const maxEngineCapacity = parseFloat(document.querySelector('#engineCapacity-range-label').textContent.split(' - ')[1]);
+
+        const minAcceleration = parseFloat(document.querySelector('#acceleration-range-label').textContent.split(' - ')[0]);
+        const maxAcceleration = parseFloat(document.querySelector('#acceleration-range-label').textContent.split(' - ')[1]);
+
+        const minPrice = parseFloat(document.querySelector('#price-range-label').textContent.split(' - ')[0]).toFixed(2);
+        const maxPrice = parseFloat(document.querySelector('#price-range-label').textContent.split(' - ')[1]).toFixed(2);
+
+        const data = {
+            startDate: startDate,
+            endDate: endDate,
+            selectedCarTag: selectedCarTag,
+            selectedColor: selectedColor,
+            minFuelConsumption: minFuelConsumption,
+            maxFuelConsumption: maxFuelConsumption,
+            minEngineCapacity: minEngineCapacity,
+            maxEngineCapacity: maxEngineCapacity,
+            minAcceleration: minAcceleration,
+            maxAcceleration: maxAcceleration,
+            minPrice:minPrice,
+            maxPrice:maxPrice,
+            isAjaxRequest:true
+        };
+
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("FilteredResults", "Cars")', 
+            data: data,
+            success: function (result) {
+                $('#filteredResults').html(result);
+            }
+        });
+    });
+
+    ///
     const urlParams = new URLSearchParams(window.location.search);
     const startDate = urlParams.get('startDate');
     const endDate = urlParams.get('endDate');
@@ -190,6 +249,9 @@
     document.getElementById("selectedCarTag").value = selectedCarTag;
     document.getElementById("selectedColor").value = selectedColor;
 
+
+
+
     const startDateInput = document.querySelector('#startDate');
     const endDateInput = document.querySelector('#endDate');
 
@@ -199,7 +261,33 @@
         nextDay.setDate(startDateValue.getDate() + 1);
         const minEndDate = nextDay.toISOString().slice(0, 10);
         endDateInput.min = minEndDate;
+        const fuelConsumptionLabel1 = document.getElementById('fuelConsumption-range-label').textContent;
+        console.log(fuelConsumptionLabel1);
+        const fuelConsumptionValues = fuelConsumptionLabel1.split(' - ');
+        const minFuelConsumption = parseFloat(fuelConsumptionValues[0]);
+        const maxFuelConsumption = parseFloat(fuelConsumptionValues[1]);
+        //
+        const engineCapacityLabel = document.getElementById('engineCapacity-range-label').textContent;
+        const accelerationLabel = document.getElementById('acceleration-range-label').textContent;
 
+        const engineCapacityValues = engineCapacityLabel.split(' - ');
+        const accelerationValues = accelerationLabel.split(' - ');
+
+        const minEngineCapacity = parseFloat(engineCapacityValues[0]);
+        const maxEngineCapacity = parseFloat(engineCapacityValues[1]);
+
+        const minAcceleration = parseFloat(accelerationValues[0]);
+        const maxAcceleration = parseFloat(accelerationValues[1]);
+
+        console.log('Min Engine Capacity:', minEngineCapacity);
+        console.log('Max Engine Capacity:', maxEngineCapacity);
+
+        console.log('Min Acceleration:', minAcceleration);
+        console.log('Max Acceleration:', maxAcceleration);
+        //
+
+        console.log('Min Fuel Consumption:', minFuelConsumption);
+        console.log('Max Fuel Consumption:', maxFuelConsumption);
         const endDateValue = new Date(endDateInput.value);
         if (endDateValue < startDateValue) {
             endDateInput.value = minEndDate;
@@ -212,7 +300,7 @@
         const nextDay = new Date(startDateValue);
         nextDay.setDate(startDateValue.getDate() + 1);
         const minEndDate = nextDay.toISOString().slice(0, 10);
-
+        console.log(fuelConsumptionRangeLabel);
         if (endDateValue <= startDateValue) {
             endDateInput.value = minEndDate;
         }
@@ -235,8 +323,6 @@
             window.location.href = url;
         });
     });
+                    ////
+
 </script>
-
-
-
-
