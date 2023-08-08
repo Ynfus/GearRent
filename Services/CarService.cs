@@ -13,7 +13,9 @@ namespace GearRent.Services
         Task<List<Car>> GetAllCarsAsync();
         IQueryable<Car> GetAllCarsAsyncQueryable();
         Task<CarEmailViewModel> GetCarEmailByIdAsync(int carId);
-        IQueryable<Car> GetFilteredCarsAsync(DateTime? startDate, DateTime? endDate, CarTag? selectedCarTag, string? selectedColor);
+        IQueryable<Car> GetFilteredCarsAsync(DateTime? startDate, DateTime? endDate, CarTag? selectedCarTag, string? selectedColor,
+                                                    float? minFuelConsumption, float? maxFuelConsumption, float? minEngineCapacity, float? maxEngineCapacity,
+                                                    float? minAcceleration, float? maxAcceleration, decimal? minPrice, decimal? maxPrice);
         Task<List<string>> GetCarColorsAsync();
         Task AddCarAsync(Car car);
     }
@@ -49,7 +51,9 @@ namespace GearRent.Services
 
             return car;
         }
-        public IQueryable<Car> GetFilteredCarsAsync(DateTime? startDate, DateTime? endDate, CarTag? selectedCarTag, string? selectedColor)
+        public IQueryable<Car> GetFilteredCarsAsync(DateTime? startDate, DateTime? endDate, CarTag? selectedCarTag, string? selectedColor,
+                                                    float? minFuelConsumption, float? maxFuelConsumption, float? minEngineCapacity, float? maxEngineCapacity,
+                                                    float? minAcceleration, float? maxAcceleration, decimal? minPrice, decimal? maxPrice)
         {
             var cars = _context.Cars.AsQueryable();
 
@@ -68,8 +72,27 @@ namespace GearRent.Services
                 cars = cars.Where(c => c.Tag == selectedCarTag);
             }
 
+            if (minFuelConsumption != null && maxFuelConsumption != null)
+            {
+                cars = cars.Where(c => c.FuelConsumption >= minFuelConsumption && c.FuelConsumption <= maxFuelConsumption);
+            }
+
+            if (minEngineCapacity != null && maxEngineCapacity != null)
+            {
+                cars = cars.Where(c => c.EngineSize >= minEngineCapacity && c.EngineSize <= maxEngineCapacity);
+            }
+
+            if (minAcceleration != null && maxAcceleration != null)
+            {
+                cars = cars.Where(c => c.Acceleration >= minAcceleration && c.Acceleration <= maxAcceleration);
+            }
+            if (minPrice != null && maxPrice != null)
+            {
+                cars = cars.Where(c => c.Price >= minPrice && c.Price <= maxPrice);
+            }
             return cars.AsQueryable();
         }
+
         public async Task<List<string>> GetCarColorsAsync()
         {
             return await _context.Cars.Select(c => c.Color).Distinct().ToListAsync();
