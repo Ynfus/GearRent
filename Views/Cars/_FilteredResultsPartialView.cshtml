@@ -1,0 +1,21 @@
+﻿@using GearRent.PaginatedList;
+@model PaginatedList<GearRent.Models.Car>
+
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+@foreach (var car in Model)
+{
+    <div class="row row-car mb-4">
+        <div class="col-md-5">
+            <img src="@car.PhotoLink" class="img-fluid car-image col-md-5" alt="@car.Make @car.Model">
+        </div>
+        <div class="col-md-7">
+            <h5 class="card-title">@car.Make @car.Model</h5>
+            <p class="card-text">Price: @car.Price</p>
+            <a href="" id="order-link-@car.Id" class="btn btn-primary order-link" data-car-id="@car.Id">Order</a>
+        </div>
+    </div>
+}
