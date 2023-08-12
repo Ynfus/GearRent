@@ -41,19 +41,29 @@ namespace GearRent.Controllers
                         Problem("Entity set 'ApplicationDbContext.Cars'  is null.");
 
         }
-        public async Task<IActionResult> Index(string sortOrder, DateTime? startDate, DateTime? endDate, int? pageNumber, CarTag? selectedCarTag, string? selectedColor)
+
+        public async Task<IActionResult> Index(string sortOrder, DateTime? startDate, DateTime? endDate, CarTag? selectedCarTag, string? selectedColor,
+                                            float? minFuelConsumption, float? maxFuelConsumption, float? minEngineCapacity, float? maxEngineCapacity,
+                                            float? minAcceleration, float? maxAcceleration, int? pageNumber, decimal? minPrice, decimal? maxPrice, bool isAjaxRequest, int pageSize)
         {
             ViewBag.PriceSortParm = String.IsNullOrEmpty(sortOrder) ? "price_desc" : "";
             ViewBag.NameSortParm = sortOrder == "name" ? "name_desc" : "name";
-            var cars = _carService.GetFilteredCarsAsync(startDate, endDate, selectedCarTag, selectedColor);
+            var cars = _carService.GetFilteredCarsAsync(startDate, endDate, selectedCarTag, selectedColor, minFuelConsumption, maxFuelConsumption, minEngineCapacity, maxEngineCapacity, minAcceleration, maxAcceleration, minPrice, maxPrice);
             ViewBag.CarTags = Enum.GetValues(typeof(CarTag));
-
             var colors = await _carService.GetCarColorsAsync();
             ViewBag.Colors = colors;
-            int pageSize = 3;
-            return View(await PaginatedList<Car>.CreateAsync(cars, pageNumber ?? 1, pageSize));
+            if (isAjaxRequest)
+            {
+                var paginatedList = await PaginatedList<Car>.CreateAsync(cars, pageNumber ?? 1, pageSize); 
+                HttpContext.Response.Headers.Add("X-Total-Pages", paginatedList.TotalPages.ToString());
+                HttpContext.Response.Headers.Add("X-Current-Page", (pageNumber ?? 1).ToString());
+                return PartialView("_FilteredResultsPartialView", paginatedList);
+            }
+            else
+            {
+                return View(await PaginatedList<Car>.CreateAsync(cars, pageNumber ?? 1, pageSize));
+            }
         }
-
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Cars == null)
