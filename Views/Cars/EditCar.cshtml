@@ -1,4 +1,5 @@
 ﻿@model GearRent.Models.Car
+@using GearRent.Models;
 @using GearRent.PaginatedList;
 @using Microsoft.AspNetCore.Identity;
 @{
@@ -48,6 +49,26 @@
                 <input asp-for="EngineSize" class="form-control" />
                 <span asp-validation-for="EngineSize" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label asp-for="FuelType">Fuel Type</label>
+                <select asp-for="FuelType" class="form-control">
+                    @foreach (var item in Enum.GetValues(typeof(FuelType)))
+                    {
+                        <option value="@item">@item</option>
+                    }
+                </select>
+                <span asp-validation-for="FuelType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Acceleration" class="control-label"></label>
+                <input asp-for="Acceleration" class="form-control" />
+                <span asp-validation-for="Acceleration" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FuelConsumption" class="control-label"></label>
+                <input asp-for="FuelConsumption" class="form-control" />
+                <span asp-validation-for="FuelConsumption" class="text-danger"></span>
+            </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="Available" /> @Html.DisplayNameFor(model => model.Available)
@@ -59,6 +80,16 @@
                 <span asp-validation-for="PhotoLink" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Tag">Tag</label>
+                <select asp-for="Tag" class="form-control">
+                    @foreach (var item in Enum.GetValues(typeof(CarTag)))
+                    {
+                        <option value="@((int)item)">@item</option>
+                    }
+                </select>
+                <span asp-validation-for="Tag" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-2">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
