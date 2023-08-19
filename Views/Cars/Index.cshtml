@@ -8,15 +8,13 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-lg-3 mt-4 d-flex justify-content-left">
+        <div class="col-lg-3 mt-4 d-flex justify-content-center">
             <form method="get">
                 <div class="form-group">
                     <label for="pageSize">Records per Page:</label>
                     <select class="form-control" name="pageSize" id="pageSize">
                         <option value="3">3</option>
                         <option value="5">5</option>
-                        @*                        <option value="8">8</option>
-                        *@
                         <option value="10">10</option>
                     </select>
                 </div>
@@ -85,8 +83,8 @@
             </form>
         </div>
 
-        <div class="col-lg-9 mt-2">
-            <div id="filteredResults">
+        <div class="col-lg-9 mt-4">
+            <div id="filteredResults" class="car-grid">
                 @foreach (var car in Model)
                 {
                     <div class="row row-car mb-4">
