@@ -17,9 +17,9 @@ html {
   min-height: 100%;
 }
 
-body {
+/*body {
   margin-bottom: 60px;
-}
+}*/
 
 
 .car-grid {
@@ -215,6 +215,25 @@ tr {
     justify-content: center;
 }
 
+.footer-heading {
+    font-size: 20px; 
+}
+
+.footer-text {
+    font-size: 14px; 
+}
+
+.footer-input {
+    font-size: 12px; 
+}
+
+.footer-btn {
+    font-size: 12px;
+}
+.link-content {
+    text-decoration: none !important;
+    color: white !important;
+}
 
 
 
