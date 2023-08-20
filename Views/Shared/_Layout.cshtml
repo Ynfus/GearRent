@@ -58,9 +58,33 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2023 - GearRent - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="bg-secondary text-white py-4">
+        <div class="container text-sm-center text-md-start">
+            <div class="row">
+                <div class="col-md-4 ">
+                    <h4 class="footer-heading">GEARRENT Polska sp. z o.o.</h4>
+                    <p class="footer-text"> ul. Półwiejska 42</p>
+                    <p class="footer-text">61-888 Poznań</p>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="footer-heading">Informacje</h5>
+                    <p class="footer-text"><a href="@Url.Action("OWNP", "Contact")" class="link-content">Ogólne warunki najmu pojazdów</a></p>
+                    <p class="footer-text"><a href="@Url.Action("PrivacyPolicy", "Contact")" class="link-content">Polityka prywatności</a></p>
+                    <p class="footer-text"><a href="@Url.Action("Complaint", "Contact")" class="link-content">Reklamacje</a></p>
+                </div>
+
+                <div class="col-md-4">
+                    <h4 class="footer-heading">Skontaktuj się z nami!</h4>
+                    <p class="footer-text">wynajmy krótkoterminowe<br>+48 123 456 789</p>
+                    <p class="footer-text">wynajmy długoterminowe<br>+48 234 567 890</p>
+                    <p class="footer-text"> <a href="mailto:kontakt@gearrent.pl" class="link-content">kontakt@gearrent.pl</a></p>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <p class="text-center footer-text mb-0">&copy; GearRent.pl. All rights reserved. Made by YNFUS</p>
+                </div>
+            </div>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
