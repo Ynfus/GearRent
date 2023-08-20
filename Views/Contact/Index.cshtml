@@ -1,14 +1,17 @@
 ﻿@model ContactViewModel
-
-<div class="container">
+<style>
+    .resize-vertical {
+        resize: vertical;
+    }</style>
+<div class="container text-sm-center text-md-start">
     <h1 class="text-center mt-5 mb-3">Kontakt</h1>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-6 ">
             <h2>Dane kontaktowe</h2>
             <ul class="list-unstyled">
                 <li><i class="bi bi-geo-alt-fill me-2"></i>ul. Półwiejska 42, 61-888 Poznań</li>
                 <li><i class="bi bi-telephone-fill me-2"></i>+48 123 456 789</li>
-                <li><i class="bi bi-envelope-fill me-2"></i>info@wypozyczalniasamochodow.pl</li>
+                <li><i class="bi bi-envelope-fill me-2"></i>kontakt@gearrent.pl</li>
             </ul>
             <h4>Godziny otwarcia:</h4>
             <ul class="list-unstyled">
@@ -36,7 +39,7 @@
                     @Html.LabelFor(model => model.Phone, new { @class = "form-label" })
                 </div>
                 <div class="form-floating mb-3">
-                    @Html.TextAreaFor(model => model.Message, new { @class = "form-control", @rows = "5", @required = "required", placeholder = " " })
+                    @Html.TextAreaFor(model => model.Message, new { @class = "form-control", @rows = "1", @required = "required", placeholder = " " })
                     @Html.LabelFor(model => model.Message, new { @class = "form-label" })
                 </div>
                 <button type="submit" class="btn btn-primary mb-3">Wyślij</button>
