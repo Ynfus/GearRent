@@ -44,7 +44,7 @@ namespace GearRent.Controllers
 
         public async Task<IActionResult> Index(string sortOrder, DateTime? startDate, DateTime? endDate, CarTag? selectedCarTag, string? selectedColor,
                                             float? minFuelConsumption, float? maxFuelConsumption, float? minEngineCapacity, float? maxEngineCapacity,
-                                            float? minAcceleration, float? maxAcceleration, int? pageNumber, decimal? minPrice, decimal? maxPrice, bool isAjaxRequest, int pageSize)
+                                            float? minAcceleration, float? maxAcceleration, int? pageNumber, decimal? minPrice, decimal? maxPrice, bool isAjaxRequest, int? pageSize)
         {
             ViewBag.PriceSortParm = String.IsNullOrEmpty(sortOrder) ? "price_desc" : "";
             ViewBag.NameSortParm = sortOrder == "name" ? "name_desc" : "name";
@@ -54,14 +54,14 @@ namespace GearRent.Controllers
             ViewBag.Colors = colors;
             if (isAjaxRequest)
             {
-                var paginatedList = await PaginatedList<Car>.CreateAsync(cars, pageNumber ?? 1, pageSize); 
+                var paginatedList = await PaginatedList<Car>.CreateAsync(cars, pageNumber ?? 1, pageSize ?? 3); 
                 HttpContext.Response.Headers.Add("X-Total-Pages", paginatedList.TotalPages.ToString());
                 HttpContext.Response.Headers.Add("X-Current-Page", (pageNumber ?? 1).ToString());
                 return PartialView("_FilteredResultsPartialView", paginatedList);
             }
             else
             {
-                return View(await PaginatedList<Car>.CreateAsync(cars, pageNumber ?? 1, pageSize));
+                return View(await PaginatedList<Car>.CreateAsync(cars, pageNumber ?? 1, pageSize ?? 3));
             }
         }
         public async Task<IActionResult> Details(int? id)
