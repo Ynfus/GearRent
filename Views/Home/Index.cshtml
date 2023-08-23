@@ -136,33 +136,32 @@
 </section>
 <div class="container-fluid">
     <div class="row justify-content-center flex-wrap">
-        <div class="col-lg-4 col-md-6 col-sm-12 d-flex justify-content-center" onclick="window.location.href='/kontakt'" style="flex-basis: 50%; margin-top: 10px;">
-            <div class="rectangle bg-image bg-image-index" data-image="/luxuryCar.jpg">
-                <h3>Kategoria 3</h3>
-                <p>Opis kategorii 3</p>
+        <div class="col-lg-4 col-md-6 col-sm-12 d-flex justify-content-center" style="flex-basis: 50%; margin-top: 10px;">
+            <div class="rectangle bg-image bg-image-index" data-image="/luxuryCar.jpg" data-car-tag="Elegancki">
+                <h3 class="category-title">Kategoria 3</h3>
+                <p class="category-description m-4">Eleganckie samochody to połączenie klasyki i nowoczesności. Ich wyrafinowany design i luksusowe wykończenia wyróżniają Cię na drodze. Wnętrza zaprojektowane z dbałością o detal, zaawansowane technologie i wyjątkowy komfort jazdy sprawiają, że podróżowanie staje się wyjątkowe przeżycie./p>
             </div>
         </div>
         <div class="col-lg-4 col-md-6 col-sm-12 d-flex justify-content-center" style="flex-basis: 50%; margin-top: 10px;">
-            <div class="rectangle bg-image bg-image-index" data-image="/economicCar.jpg">
-                <h3>Kategoria 4</h3>
-                <p>Opis kategorii 4</p>
+            <div class="rectangle bg-image bg-image-index" data-image="/economicCar.jpg" data-car-tag="Ekonomiczny">
+                <h3 class="category-title">Kategoria 4</h3>
+                <p class="category-description m-4">Ekonomiczne samochody to doskonały wybór dla osób ceniących oszczędność. Dzięki niskiemu zużyciu paliwa i kompaktowym rozmiarom, te auta są idealne na krótsze wyjazdy w mieście lub na weekendowe podróże. Wygodne wnętrza i nowoczesne rozwiązania technologiczne sprawiają, że podróżowanie staje się przyjemnością.</p>
             </div>
         </div>
         <div class="col-lg-4 col-md-6 col-sm-12 d-flex justify-content-center" style="flex-basis: 50%; margin-top: 10px;">
-            <div class="rectangle bg-image bg-image-index" data-image="/sportCar.jpg">
-                <h3>Kategoria 5</h3>
-                <p>Opis kategorii 5</p>
+            <div class="rectangle bg-image bg-image-index" data-image="/sportCar.jpg" data-car-tag="Sportowy">
+                <h3 class="category-title">Kategoria 5</h3>
+                <p class="category-description m-4">Samochody sportowe to adrenalina i emocje na każdym kilometrze. Z mocnymi silnikami, dynamicznym przyspieszeniem i wyjątkowym designem, te auta są stworzone dla miłośników szybkiej jazdy. Wyjątkowe osiągi idą w parze z futurystycznymi wnętrzami, tworząc niezapomniane doznania za kierownicą.</p>
             </div>
         </div>
         <div class="col-lg-4 col-md-6 col-sm-12 d-flex justify-content-center" style="flex-basis: 50%; margin-top: 10px;">
-            <div class="rectangle bg-image bg-image-index" data-image="/comfortableCar.jpg">
-                <h3>Kategoria 6</h3>
-                <p>Opis kategorii 6</p>
+            <div class="rectangle bg-image bg-image-index" data-image="/comfortableCar.jpg" data-car-tag="Wygodny">
+                <h3 class="category-title">Kategoria 6</h3></br>
+                <p class="category-description m-4 text-center">Samochody z kategorii wygodnej to synonim komfortu i luksusu. Doskonale wyposażone, z przestronnym wnętrzem i zaawansowanymi systemami bezpieczeństwa, te auta zapewniają doskonałe warunki podróżowania dla Ciebie i Twoich pasażerów. Idealne do dłuższych tras i wyjątkowych okazji.</p>
             </div>
         </div>
     </div>
 </div>
-
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 
@@ -176,12 +175,14 @@
 
 <script>
     const bgImages = document.querySelectorAll('.bg-image');
+    const emailContainers = document.querySelectorAll('.email-container');
+    const carDivs = document.querySelectorAll(".bg-image-index");
+    const categoryDivs = document.querySelectorAll(".rectangle");
 
     bgImages.forEach(bgImage => {
         const imageUrl = bgImage.getAttribute('data-image');
         bgImage.style.backgroundImage = `url('${imageUrl}')`;
     });
-    const emailContainers = document.querySelectorAll('.email-container');
 
     emailContainers.forEach(emailContainer => {
         const emailLink = emailContainer.querySelector('.email-link');
@@ -191,6 +192,29 @@
             event.preventDefault();
             const emailAddress = emailLink.innerText;
             copyToClipboard(emailAddress);
+        });
+    });
+
+    carDivs.forEach(div => {
+        div.addEventListener("click", function () {
+            const selectedCarTag = div.getAttribute("data-car-tag");
+            localStorage.setItem("selectedCarTag", selectedCarTag);
+            window.location.href = '@Url.Action("Index", "Cars")';
+        });
+    });
+
+    categoryDivs.forEach(div => {
+        const title = div.querySelector(".category-title");
+        const description = div.querySelector(".category-description");
+
+        div.addEventListener("mouseenter", function () {
+            if (title) title.style.display = "none";
+            if (description) description.style.display = "block";
+        });
+
+        div.addEventListener("mouseleave", function () {
+            if (title) title.style.display = "block";
+            if (description) description.style.display = "none";
         });
     });
 
