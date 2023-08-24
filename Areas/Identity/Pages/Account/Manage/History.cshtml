@@ -18,17 +18,21 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var reservation in Model.Reservations)
+        @foreach (var reservation in Model.Reservations.OrderByDescending(r => r.StartDate))
         {
-            <tr>
+            <tr class="@(reservation.Status == ReservationStatus.Pending ? "table-warning" : "") @(reservation.Status == ReservationStatus.Declined ? "table-danger" : "")">
                 <td>@reservation.StartDate.ToShortDateString()</td>
                 <td>@reservation.EndDate.ToShortDateString()</td>
-                <td>@reservation.Car.Make @reservation.Car.Model </td>
+                <td>@reservation.Car.Make @reservation.Car.Model</td>
                 <td>
                     <div class="d-flex flex-row justify-content-center">
-                        <button type="button" class="btn btn-danger me-2 delete-reservation" data-reservation-id="@reservation.Id">
-                            Delete
-                        </button>
+                        @if (reservation.Status == ReservationStatus.Approved)
+                        {
+                            <button type="button" class="btn btn-danger me-2 delete-reservation" data-reservation-id="@reservation.Id">
+                                Delete
+                            </button>
+                        }
+
                         @if (reservation.Status == ReservationStatus.Pending)
                         {
                             <form method="get" action="/reservations/checkout/@reservation.Id">
@@ -42,7 +46,6 @@
 
         @foreach (var reservation in Model.Reservations)
         {
-            <!-- Modal -->
             <div class="modal fade" id="deleteReservationModal-@reservation.Id" tabindex="-1" aria-labelledby="deleteReservationModalLabel-@reservation.Id" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -55,13 +58,14 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-danger">Delete</button>
+                            <button type="submit" class="btn btn-danger">Cancel</button>
                         </div>
                     </div>
                 </div>
             </div>
         }
     </tbody>
+
 </table>
 
 
@@ -80,10 +84,9 @@
                 modal.show();
                 const deleteButton = document.querySelector(`${modalId} .btn-danger`);
                 deleteButton.addEventListener('click', () => {
-                    fetch(`/reservations/delete/${reservationId}`, {
-                        method: 'DELETE',
+                    fetch(`/reservations/declinedStatus/${reservationId}`, {
+                        method: 'PATCH',
                     }).then(() => {
-                        // Odśwież stronę po usunięciu rezerwacji
                         location.reload();
                     }).catch((error) => {
                         console.error('Error deleting reservation:', error);
