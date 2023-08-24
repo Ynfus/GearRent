@@ -234,6 +234,12 @@ tr {
     text-decoration: none !important;
     color: white !important;
 }
+.category-description {
+    display:none;
+    text-align:center;
+    color:white;
+}
+
 
 
 

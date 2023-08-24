@@ -181,7 +181,21 @@ namespace GearRent.Controllers
             await _context.SaveChangesAsync();
             return StatusCode(200);
         }
+        public async Task<IActionResult> DeclinedStatus(int id)
+        {
+            if (_context.Reservations == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Reservations'  is null.");
+            }
+            var reservation = await _reservationService.GetReservationByIdAsync(id);
+            if (reservation != null)
+            {
+                reservation.Status = ReservationStatus.Declined;
+            }
 
+            await _context.SaveChangesAsync();
+            return StatusCode(200);
+        }
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
