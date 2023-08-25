@@ -2,20 +2,12 @@
 using GearRent.Models;
 using GearRent.PaginatedList;
 using GearRent.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Stripe.Radar;
-using System;
 using System.Data;
-using System.Diagnostics;
-using System.Drawing.Printing;
-using System.Linq;
-using System.Net.Mail;
 
 namespace GearRent.Controllers
 {
@@ -44,14 +36,29 @@ namespace GearRent.Controllers
             _emailSender = emailSender;
             _employeeService = employeeService;
         }
-        public async Task<IActionResult> Index(int? pageNumber)
+        public async Task<IActionResult> Index(int? pageNumber, int? daysAhead, bool? showPending, bool? showApproved, bool? showDeclined)
         {
-            var upcomingReservations = from r in _context.Reservations
-                                       select r;
-            var currentDate = DateTime.Now.AddDays(-10);
-            upcomingReservations = upcomingReservations
-                .Where(r => r.StartDate > currentDate /*&& r.Status == ReservationStatus.Approved*/)
-                .Include(r => r.Car);
+            var addDaysDate = DateTime.Now.AddDays(daysAhead ?? 10);
+            var currentDate = DateTime.Now;
+
+            var upcomingReservations = _context.Reservations
+                .Where(r => r.StartDate <= addDaysDate && r.StartDate>=currentDate);
+
+            if (showPending == true)
+            {
+                upcomingReservations = upcomingReservations.Where(r => r.Status == ReservationStatus.Pending);
+            }
+            if (showApproved == true)
+            {
+                upcomingReservations = upcomingReservations.Where(r => r.Status == ReservationStatus.Approved);
+            }
+            if (showDeclined == true)
+            {
+                upcomingReservations = upcomingReservations.Where(r => r.Status == ReservationStatus.Declined);
+            }
+
+            upcomingReservations = upcomingReservations.Include(r => r.Car);
+
             int pageSize = 3;
 
             return View(await PaginatedList<Reservation>.CreateAsync(upcomingReservations.AsNoTracking(), pageNumber ?? 1, pageSize));
@@ -150,7 +157,7 @@ namespace GearRent.Controllers
                 .GroupBy(r => r.EndDate.Month)
                 .Select(group => new
                 {
-                    Month = new DateTime(year, group.Key, 1).ToString("MMMM"), 
+                    Month = new DateTime(year, group.Key, 1).ToString("MMMM"),
                     Reservations = group.Count(),
                     Revenue = group.Sum(r => r.ReservationValue)
                 })
