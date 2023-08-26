@@ -2,10 +2,10 @@
 {
     public enum ReservationStatus
     {
-        Finished,
-        Approved,
-        Declined,
-        Pending,
-
+        Unpaid,     
+        Approved,   
+        Canceled,   
+        Finished,   
+        InProgress  
     }
 }
