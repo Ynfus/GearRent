@@ -36,34 +36,30 @@ namespace GearRent.Controllers
             _emailSender = emailSender;
             _employeeService = employeeService;
         }
-        public async Task<IActionResult> Index(int? pageNumber, int? daysAhead, bool? showPending, bool? showApproved, bool? showDeclined)
+        public async Task<IActionResult> Index(int? pageNumber, int? daysAhead, bool? showInProgress, bool? showApproved, bool? showUnpaid, bool? showFinished, bool? showCanceled, int? pageSize)
         {
             var addDaysDate = DateTime.Now.AddDays(daysAhead ?? 10);
-            var currentDate = DateTime.Now;
+            var currentDate = DateTime.Now.AddDays(-100);
 
             var upcomingReservations = _context.Reservations
-                .Where(r => r.StartDate <= addDaysDate && r.StartDate>=currentDate);
-
-            if (showPending == true)
-            {
-                upcomingReservations = upcomingReservations.Where(r => r.Status == ReservationStatus.Pending);
-            }
-            if (showApproved == true)
-            {
-                upcomingReservations = upcomingReservations.Where(r => r.Status == ReservationStatus.Approved);
-            }
-            if (showDeclined == true)
-            {
-                upcomingReservations = upcomingReservations.Where(r => r.Status == ReservationStatus.Declined);
-            }
+                .Where(r => r.StartDate <= addDaysDate && r.StartDate >= currentDate);
 
             upcomingReservations = upcomingReservations.Include(r => r.Car);
 
-            int pageSize = 3;
+            if (showInProgress == true || showApproved == true || showUnpaid == true || showFinished == true || showCanceled == true)
+            {
+                upcomingReservations = upcomingReservations.Where(r =>
+                    (showInProgress == true && r.Status == ReservationStatus.InProgress) ||
+                    (showApproved == true && r.Status == ReservationStatus.Approved) ||
+                    (showUnpaid == true && r.Status == ReservationStatus.Unpaid) ||
+                    (showFinished == true && r.Status == ReservationStatus.Finished) ||
+                    (showCanceled == true && (r.Status == ReservationStatus.Canceled))
+                );
+            }
 
-            return View(await PaginatedList<Reservation>.CreateAsync(upcomingReservations.AsNoTracking(), pageNumber ?? 1, pageSize));
+
+            return View(await PaginatedList<Reservation>.CreateAsync(upcomingReservations.AsNoTracking(), pageNumber ?? 1, pageSize ?? 3));
         }
-
         [HttpDelete]
         public async Task<IActionResult> DeleteCar(int id)
         {
