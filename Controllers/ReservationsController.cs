@@ -118,7 +118,7 @@ namespace GearRent.Controllers
                 .Select(u => u.Email)
                 .FirstOrDefaultAsync();
             var subject = $"Potwierdzenie rezerwacji {reservation.Id}";
-            var body = $"Twoja rezerwacja na {car.Make} {car.Model} została pomyślnie złożona.\nkwota zamówienia to: {reservation.ReservationValue}";
+            var body = $"Twoja rezerwacja na {car.Make} {car.Model} została pomyślnie złożona.\nOpłacona kwota zamówienia to: {reservation.ReservationValue}";
             await _emailSender.SendEmailAsync(email, subject, body);
             await _context.SaveChangesAsync();
 
@@ -181,7 +181,7 @@ namespace GearRent.Controllers
             await _context.SaveChangesAsync();
             return StatusCode(200);
         }
-        public async Task<IActionResult> DeclinedStatus(int id)
+        public async Task<IActionResult> CanceledStatus(int id)
         {
             if (_context.Reservations == null)
             {
@@ -190,7 +190,7 @@ namespace GearRent.Controllers
             var reservation = await _reservationService.GetReservationByIdAsync(id);
             if (reservation != null)
             {
-                reservation.Status = ReservationStatus.Declined;
+                reservation.Status = ReservationStatus.Canceled;
             }
 
             await _context.SaveChangesAsync();

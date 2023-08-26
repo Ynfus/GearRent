@@ -10,7 +10,7 @@ namespace GearRent.Models
         public Car Car { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public ReservationStatus Status { get; set; } = ReservationStatus.Pending;
+        public ReservationStatus Status { get; set; } = ReservationStatus.Unpaid;
 
         public decimal ReservationValue { get; set; }
     }
