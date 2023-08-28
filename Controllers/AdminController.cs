@@ -36,7 +36,8 @@ namespace GearRent.Controllers
             _emailSender = emailSender;
             _employeeService = employeeService;
         }
-        public async Task<IActionResult> Index(int? pageNumber, int? daysAhead, bool? showInProgress, bool? showApproved, bool? showUnpaid, bool? showFinished, bool? showCanceled, int? pageSize)
+        [HttpGet]
+        public async Task<IActionResult> Index(int? pageNumber, int? daysAhead, bool? showInProgress, bool? showApproved, bool? showUnpaid, bool? showFinished, bool? showCanceled, int? pageSize, bool isAjaxRequest)
         {
             var addDaysDate = DateTime.Now.AddDays(daysAhead ?? 10);
             var currentDate = DateTime.Now.AddDays(-100);
@@ -57,8 +58,18 @@ namespace GearRent.Controllers
                 );
             }
 
+            if (isAjaxRequest)
+            {
+                var paginatedList = await PaginatedList<Reservation>.CreateAsync(upcomingReservations.AsNoTracking(), pageNumber ?? 1, pageSize ?? 3);
+                HttpContext.Response.Headers.Add("X-Total-Pages", paginatedList.TotalPages.ToString());
+                HttpContext.Response.Headers.Add("X-Current-Page", (pageNumber ?? 1).ToString());
+                return PartialView("_FilteredResultsReservationsPartialView", paginatedList);
+            }
+            else
+            {
+                return View(await PaginatedList<Reservation>.CreateAsync(upcomingReservations.AsNoTracking(), pageNumber ?? 1, pageSize ?? 3));
 
-            return View(await PaginatedList<Reservation>.CreateAsync(upcomingReservations.AsNoTracking(), pageNumber ?? 1, pageSize ?? 3));
+            }
         }
         [HttpDelete]
         public async Task<IActionResult> DeleteCar(int id)
