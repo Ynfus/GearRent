@@ -8,7 +8,7 @@
 }
 @foreach (var reservation in Model)
 {
-    <tr>
+    <tr tr class="@(reservation.Status == ReservationStatus.InProgress ? "table-success" : "") @(reservation.Status == ReservationStatus.Canceled ? "table-danger" : "") @(reservation.Status == ReservationStatus.Unpaid ? "table-warning" : "") @(reservation.Status == ReservationStatus.Approved ? "table-primary" : "") @(reservation.Status == ReservationStatus.Finished ? "table-secondary" : "")">
         <td>@reservation.Id</td>
         <td>@reservation.Car.Make @reservation.Car.Model</td>
         <td>@reservation.StartDate.ToShortDateString()</td>
