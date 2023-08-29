@@ -16,48 +16,56 @@
 
 <h2>Upcoming Bookings</h2>
 
-<form method="get" class="mb-4">
-    <div class="row">
-        <div class="col-md-4 mb-3">
-            <label for="daysAhead" class="form-label">Reservations up to:</label>
-            <select id="daysAhead" name="daysAhead" class="form-select">
-                <option value="7">7 days</option>
-                <option value="14">14 days</option>
-                <option value="30">30 days</option>
-            </select>
-        </div>
-        <div class="col-md-3 mb-3">
-            <label for="pageSize" class="form-label">Page size:</label>
-            <select id="pageSize" name="pageSize" class="form-select">
-                <option value="3">3</option>
-                <option value="5">5</option>
-                <option value="10">10</option>
-            </select>
-        </div>
-        <div class="col-md-4 mb-3">
-            <label class="form-label">Statuses:</label>
-            <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="statusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    Select Status
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="statusDropdown">
-                    @foreach (var status in reservationStatusValues)
-                    {
-                        <li>
-                            <div class="form-check">
-                                <input type="checkbox" name="show@(status)" value="true" class="form-check-input" id="show@(status)">
-                                <label class="form-check-label" for="show@(status)">@status</label>
-                            </div>
-                        </li>
-                    }
-                </ul>
+<div class="row m-4">
+    <div class="col">
+        <div class="d-flex justify-content-center">
+            <div class="legend">
+                <span class="badge bg-success m-2">In Progress</span>
+                <span class="badge bg-danger m-2">Canceled</span>
+                <span class="badge bg-warning text-dark m-2">Unpaid</span>
+                <span class="badge bg-primary m-2">Approved</span>
+                <span class="badge bg-secondary m-2">Finished</span>
             </div>
         </div>
-        <div class="col-md-1 align-items-center d-flex justify-content-center">
-            <button type="submit" class="btn btn-primary">Show</button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4 mb-3">
+        <label for="daysAhead" class="form-label">Reservations up to:</label>
+        <select id="daysAhead" name="daysAhead" class="form-select">
+            <option value="7">7 days</option>
+            <option value="14">14 days</option>
+            <option value="30">30 days</option>
+        </select>
+    </div>
+    <div class="col-md-3 mb-3">
+        <label for="pageSize" class="form-label">Page size:</label>
+        <select id="pageSize" name="pageSize" class="form-select">
+            <option value="3">3</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+        </select>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label class="form-label">Statuses:</label>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="statusDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Select Status
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="statusDropdown">
+                @foreach (var status in reservationStatusValues)
+                {
+                    <li>
+                        <div class="form-check">
+                            <input type="checkbox" name="show@(status)" value="true" class="form-check-input" id="show@(status)">
+                            <label class="form-check-label" for="show@(status)">@status</label>
+                        </div>
+                    </li>
+                }
+            </ul>
         </div>
     </div>
-</form>
+</div>
 
 <table class="table">
     <thead>
@@ -69,7 +77,7 @@
             <th>Actions</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="filteredResults">
         @foreach (var reservation in Model)
         {
             <tr>
@@ -86,73 +94,157 @@
         }
     </tbody>
 </table>
-@{
+@*@{
     var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
     var nextDisabled = !Model.HasNextPage ? "disabled" : "";
-}
-<div class="d-flex justify-content-between">
-    <nav>
-        <ul class="pagination">
-            @if (Model.HasPreviousPage)
-            {
-                <li class="page-item">
-                    <a class="page-link" href="@Url.Action("Index", new { pageNumber = Model.PageIndex - 1 })">Previous</a>
-                </li>
-            }
-            @for (int i = 1; i <= Model.TotalPages; i++)
-            {
-                if (i == Model.PageIndex)
-                {
-                    <li class="page-item active">
-                        <span class="page-link">@i</span>
-                    </li>
-                }
-                else
-                {
-                    <li class="page-item">
-                        <a class="page-link" href="@Url.Action("Index", new { pageNumber = i })">@i</a>
-                    </li>
-                }
-            }
-            @if (Model.HasNextPage)
-            {
-                <li class="page-item">
-                    <a class="page-link" href="@Url.Action("Index", new { pageNumber = Model.PageIndex + 1 })">Next</a>
-                </li>
-            }
-        </ul>
-    </nav>
-    <div>
-        <a href="@Url.Action("AddCar")" class="btn btn-primary">Add Car</a>
+}*@
+@if (Model != null)
+{
+
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+
+    <div class="d-flex justify-content-between">
+        <a asp-action="Index"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex - 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-default @prevDisabled prev-link">
+            Previous
+        </a>
+
+        <a asp-action="Index"
+       asp-route-sortOrder="@ViewData["CurrentSort"]"
+       asp-route-pageNumber="@(Model.PageIndex + 1)"
+       asp-route-currentFilter="@ViewData["CurrentFilter"]"
+       class="btn btn-default @nextDisabled next-link" id="next-link">
+            Next
+        </a>
     </div>
-</div>
+}
 <script>
-    document.addEventListener("click", function (event) {
-        if (event.target.classList.contains("cancel-link")) {
-            event.preventDefault();
-            const reservationId = event.target.getAttribute("data-reservation-id");
-            confirmDelete(reservationId);
-        }
-    });
+    $(document).ready(function () {
 
-    function confirmDelete(reservationId) {
-        if (confirm('Are you sure you want to cancel this reservation?')) {
-            deleteReservation(reservationId);
-        }
-    }
+        applyFilters();
 
-    function deleteReservation(reservationId) {
-        $.ajax({
-            url: '@Url.Action("CanceledStatus", "Reservations")',
-            type: 'Put',
-            data: { id: reservationId },
-            success: function () {
-                location.reload();
-            },
-            error: function (xhr, status, error) {
-                console.error(error);
-                alert('An error occurred while canceling the reservation.');
+        function applyFilters() {
+            const daysAhead = $('#daysAhead').val();
+            const pageSize = $('#pageSize').val();
+            const statuses = $('[name^="show"]:checked').map(function () {
+                return this.name.substring(4);
+            }).get();
+
+            const data = {
+                daysAhead: daysAhead,
+                pageSize: pageSize,
+                showInProgress: statuses.includes("InProgress"),
+                showApproved: statuses.includes("Approved"),
+                showUnpaid: statuses.includes("Unpaid"),
+                showFinished: statuses.includes("Finished"),
+                showCanceled: statuses.includes("Canceled"),
+                isAjaxRequest: true
+            };
+            localStorage.setItem("filtersReservations", JSON.stringify(data));
+
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("Index", "Admin")',
+                data: data,
+                success: function (result, status, xhr) {
+                    $('#filteredResults').html(result);
+                    totalPages = parseInt(xhr.getResponseHeader('X-Total-Pages'));
+                    pageNumber = parseInt(xhr.getResponseHeader('X-Current-Page'));
+                    managePaginationButtons(pageNumber, totalPages);
+                },
+                error: function () {
+                    alert("An error occurred while loading results.");
+                }
+            });
+        }
+
+        $('.prev-link').on('click', function (e) {
+            e.preventDefault();
+            var prevPage = pageNumber - 1;
+            if (prevPage >= 1) {
+                updateResults(prevPage);
             }
         });
-    }
+
+        $('.next-link').on('click', function (e) {
+            e.preventDefault();
+            var nextPage = pageNumber + 1;
+            if (nextPage <= totalPages) {
+                updateResults(nextPage);
+            }
+        });
+
+        function managePaginationButtons(currentPage, totalPages) {
+            var $prevLink = $('.prev-link');
+            var $nextLink = $('.next-link');
+
+            if (currentPage == 1) {
+                $prevLink.addClass('disabled');
+            } else {
+                $prevLink.removeClass('disabled');
+            }
+
+            if (currentPage == totalPages) {
+                $nextLink.addClass('disabled');
+            } else {
+                $nextLink.removeClass('disabled');
+            }
+        }
+
+        function updateResults(pageNumber1) {
+            var data = JSON.parse(localStorage.getItem("filtersReservations"));
+
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("Index", "Admin")',
+                data: { ...data, pageNumber: pageNumber1 },
+                success: function (result, status, xhr) {
+                    $('#filteredResults').html(result);
+                    totalPages = parseInt(xhr.getResponseHeader('X-Total-Pages'));
+                    pageNumber = parseInt(xhr.getResponseHeader('X-Current-Page'));
+                    managePaginationButtons(pageNumber, totalPages);
+                },
+                error: function () {
+                    alert("An error occurred while loading results.");
+                }
+            });
+        }
+
+        $('#daysAhead').change(applyFilters);
+        $('#pageSize').change(applyFilters);
+        $('[name^="show"]').change(applyFilters);
+
+        document.addEventListener("click", function (event) {
+            if (event.target.classList.contains("cancel-link")) {
+                event.preventDefault();
+                const reservationId = event.target.getAttribute("data-reservation-id");
+                confirmDelete(reservationId);
+            }
+        });
+
+        function confirmDelete(reservationId) {
+            if (confirm(`Are you sure you want to cancel the reservation with ID ${reservationId}?`)) {
+                cancelReservation(reservationId);
+            }
+        }
+
+        function cancelReservation(reservationId) {
+            $.ajax({
+                url: '@Url.Action("CanceledStatus", "Reservations")',
+                type: 'PUT',
+                data: { id: reservationId },
+                success: function () {
+                    applyFilters();
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                    alert('An error occurred while canceling the reservation.');
+                }
+            });
+        }
+    });
 </script>
