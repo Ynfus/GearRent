@@ -20,7 +20,7 @@
         </div>
     </div>
 </div>
-<table class="table table-striped table-bordered">
+<table class="table @*table-striped*@ table-bordered">
     <thead>
         <tr>
             <th>Start Date</th>
@@ -40,7 +40,7 @@
                     <div class="d-flex flex-row justify-content-center">
                         @if (reservation.Status == ReservationStatus.Approved)
                         {
-                            <button type="button" class="btn btn-danger me-2 delete-reservation" data-reservation-id="@reservation.Id">
+                            <button type="button" class="btn btn-danger me-2 cancel-reservation" data-reservation-id="@reservation.Id">
                                 Cancel
                             </button>
                         }
@@ -88,7 +88,7 @@
 
 
     document.addEventListener('DOMContentLoaded', () => {
-        const deleteButtons = document.querySelectorAll('.delete-reservation');
+        const deleteButtons = document.querySelectorAll('.cancel-reservation');
         deleteButtons.forEach((button) => {
             button.addEventListener('click', (event) => {
                 event.preventDefault();
@@ -98,17 +98,29 @@
                 modal.show();
                 const deleteButton = document.querySelector(`${modalId} .btn-danger`);
                 deleteButton.addEventListener('click', () => {
-                    fetch(`/reservations/declinedStatus/${reservationId}`, {
+                    fetch(`/reservations/canceledStatus/${reservationId}`, {
                         method: 'PATCH',
                     }).then(() => {
                         location.reload();
                     }).catch((error) => {
-                        console.error('Error deleting reservation:', error);
+                        console.error('Error canceling reservation:', error);
                     });
                 });
             });
         });
     });
+
+
+
+
+
+
+
+
+
+
+
+
 
 </script>
 
