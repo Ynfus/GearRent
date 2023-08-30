@@ -116,8 +116,7 @@
         </div>
     </div>
 </div>
-@*<input type="hidden" id="currentPage" value="@Model.PageIndex" />
-<input type="hidden" id="totalPages" value="@Model.PageIndex" />*@
+
 
 <script>
 
@@ -214,7 +213,7 @@
                 selectedCarTag = carTagIndexPage;
                 document.querySelector('#selectedCarTag').value = carTagIndexPage;
 
-                localStorage.removeItem("selectedCarTag"); // Usuń zmienną z localStorage
+                localStorage.removeItem("selectedCarTag"); 
             }
             console.log(selectedCarTag);
 

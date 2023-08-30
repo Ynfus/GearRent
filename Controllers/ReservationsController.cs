@@ -105,30 +105,37 @@ namespace GearRent.Controllers
         public async Task<IActionResult> ThanksEmail(int id)
         {
             string userId = HttpContext.User.Identity.IsAuthenticated ? HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value : null;
-
             var reservation = await _context.Reservations.FindAsync(id);
             if (reservation.UserId != userId)
             {
                 return NotFound();
             }
             reservation.Status = ReservationStatus.Approved;
-            Car car = await _carService.GetCarAsync(reservation.CarId);
-            var email = await _context.Users
-                .Where(u => u.Id == reservation.UserId)
-                .Select(u => u.Email)
-                .FirstOrDefaultAsync();
-            var subject = $"Potwierdzenie rezerwacji {reservation.Id}";
-            var body = $"Twoja rezerwacja na {car.Make} {car.Model} została pomyślnie złożona.\nOpłacona kwota zamówienia to: {reservation.ReservationValue}";
-            await _emailSender.SendEmailAsync(email, subject, body);
             await _context.SaveChangesAsync();
-
-            return RedirectToAction("Thanks", "Reservations", new { id = id });
+            bool emailSent = true;
+            try
+            {
+                Car car = await _carService.GetCarAsync(reservation.CarId);
+                var email = await _context.Users
+                    .Where(u => u.Id == reservation.UserId)
+                    .Select(u => u.Email)
+                    .FirstOrDefaultAsync();
+                var subject = $"Potwierdzenie rezerwacji {reservation.Id}";
+                var body = $"Twoja rezerwacja na {car.Make} {car.Model} została pomyślnie złożona.\nOpłacona kwota zamówienia to: {reservation.ReservationValue}";
+                await _emailSender.SendEmailAsync(email, subject, body);
+            }
+            catch (Exception)
+            {
+                emailSent = false;
+            }
+            return RedirectToAction("Thanks", "Reservations", new { id = id, emailSent });
         }
-        public async Task<IActionResult> Thanks(int id)
+        public async Task<IActionResult> Thanks(int id, bool emailSent)
         {
             Reservation reservation = await _reservationService.GetReservationByIdAsync(id);
             Car car = await _carService.GetCarAsync(reservation.CarId);
             ViewBag.Car = car;
+            ViewBag.EmailSent = emailSent; 
             return View(reservation);
         }
 

@@ -14,7 +14,7 @@ var reservationId = document.getElementById("myValue").value;
 const items = [{ id: reservationId }];
 
 
-console.log(myValue); 
+console.log(myValue);
 let elements;
 
 initialize();
@@ -60,12 +60,12 @@ async function handleSubmit(e) {
     const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-            return_url: "https://localhost:7121/reservations/checkout?id="+reservationId,
+            return_url: "https://localhost:7121/reservations/checkout?id=" + reservationId,
             receipt_email: emailAddress,
         },
     });
 
-   
+
     if (error.type === "card_error" || error.type === "validation_error") {
         showMessage(error.message);
     } else {
@@ -88,8 +88,8 @@ async function checkStatus() {
 
     switch (paymentIntent.status) {
         case "succeeded":
+            window.location.href = "/reservations/thanksEmail?id=" + reservationId;
             showMessage("Payment succeeded!");
-            window.location.href = "/reservations/thanksEmail?id="+reservationId;
             break;
         case "processing":
             showMessage("Your payment is processing.");
