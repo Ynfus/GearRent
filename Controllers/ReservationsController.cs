@@ -135,7 +135,7 @@ namespace GearRent.Controllers
             Reservation reservation = await _reservationService.GetReservationByIdAsync(id);
             Car car = await _carService.GetCarAsync(reservation.CarId);
             ViewBag.Car = car;
-            ViewBag.EmailSent = emailSent; 
+            ViewBag.EmailSent = emailSent;
             return View(reservation);
         }
 
@@ -190,18 +190,27 @@ namespace GearRent.Controllers
         }
         public async Task<IActionResult> CanceledStatus(int id)
         {
-            if (_context.Reservations == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Reservations'  is null.");
-            }
             var reservation = await _reservationService.GetReservationByIdAsync(id);
             if (reservation != null)
             {
                 reservation.Status = ReservationStatus.Canceled;
             }
-
+            try
+            {
+                Car car = await _carService.GetCarAsync(reservation.CarId);
+                var email = await _context.Users
+                    .Where(u => u.Id == reservation.UserId)
+                    .Select(u => u.Email)
+                    .FirstOrDefaultAsync();
+                var subject = $"Potwierdzenie rezerwacji {reservation.Id}";
+                var body = $"Twoja rezerwacja na {car.Make} {car.Model} została przez Ciebie anulowana.\nSkontaktuj się z nami mailowo w sprawie zwrotu środków";
+                await _emailSender.SendEmailAsync(email, subject, body);
+            }
+            catch (Exception ex) { }
             await _context.SaveChangesAsync();
             return StatusCode(200);
+
+
         }
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
