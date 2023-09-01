@@ -86,9 +86,13 @@
                 <td>@reservation.StartDate.ToShortDateString()</td>
                 <td>@reservation.EndDate.ToShortDateString()</td>
                 <td>
-                    <button class="cancel-link" data-reservation-id="@reservation.Id">
-                        <i class="fa fa-trash"></i>
-                    </button>
+                    @if (reservation.Status == ReservationStatus.Approved || reservation.Status == ReservationStatus.Unpaid)
+                    {
+                        <button class="cancel-link" data-reservation-id="@reservation.Id">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    }
+
                 </td>
             </tr>
         }

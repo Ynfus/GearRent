@@ -1,9 +1,5 @@
 ﻿@using GearRent.PaginatedList;
 @model PaginatedList<GearRent.Models.Reservation>
-
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
 @{
 }
 @foreach (var reservation in Model)
@@ -14,9 +10,12 @@
         <td>@reservation.StartDate.ToShortDateString()</td>
         <td>@reservation.EndDate.ToShortDateString()</td>
         <td>
-            <button class="cancel-link" data-reservation-id="@reservation.Id">
-                <i class="fa fa-trash"></i>
-            </button>
+            @if (reservation.Status == ReservationStatus.Approved || reservation.Status == ReservationStatus.Unpaid)
+            {
+                <button class="cancel-link" data-reservation-id="@reservation.Id">
+                    <i class="fa fa-trash"></i>
+                </button>
+            }
         </td>
     </tr>
 }
