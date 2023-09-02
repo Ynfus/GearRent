@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Stripe;
+using Hangfire;
+using Hangfire.SqlServer;
+using System.Configuration;
+using GearRent.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -27,6 +31,30 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+builder.Services.AddHangfire(hangfire =>
+{
+    hangfire.SetDataCompatibilityLevel(CompatibilityLevel.Version_170);
+    hangfire.UseSimpleAssemblyNameTypeSerializer();
+    hangfire.UseRecommendedSerializerSettings();
+    hangfire.UseColouredConsoleLogProvider();
+    hangfire.UseSqlServerStorage(
+                 builder.Configuration.GetConnectionString("DefaultConnection"),
+        new SqlServerStorageOptions
+        {
+            CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+            SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+            QueuePollInterval = TimeSpan.Zero,
+            UseRecommendedIsolationLevel = true,
+            DisableGlobalLocks = true
+        });
+    RecurringJob.AddOrUpdate(() => HangfireControler.SendCancellationEmail(), Cron.Minutely());
+
+    var server = new BackgroundJobServer(new BackgroundJobServerOptions
+    {
+        ServerName = "hangfire-test",
+    });
+});
+
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -50,7 +78,7 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
+app.UseHangfireDashboard(); 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
