@@ -202,7 +202,7 @@ namespace GearRent.Controllers
                     .Where(u => u.Id == reservation.UserId)
                     .Select(u => u.Email)
                     .FirstOrDefaultAsync();
-                var subject = $"Potwierdzenie rezerwacji {reservation.Id}";
+                var subject = $"Anulacja rezerwacji {reservation.Id}";
                 var body = $"Twoja rezerwacja na {car.Make} {car.Model} została przez Ciebie anulowana.\nSkontaktuj się z nami mailowo w sprawie zwrotu środków";
                 await _emailSender.SendEmailAsync(email, subject, body);
             }

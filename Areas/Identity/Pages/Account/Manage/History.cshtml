@@ -38,7 +38,7 @@
                 <td>@reservation.Car.Make @reservation.Car.Model</td>
                 <td>
                     <div class="d-flex flex-row justify-content-center">
-                        @if (reservation.Status == ReservationStatus.Approved)
+                        @if (reservation.Status == ReservationStatus.Approved || reservation.Status== ReservationStatus.Unpaid)
                         {
                             <button type="button" class="btn btn-danger me-2 cancel-reservation" data-reservation-id="@reservation.Id">
                                 Cancel
