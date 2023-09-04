@@ -29,17 +29,27 @@ namespace GearRent.Controllers
             _roleManager = roleManager;
             _emailSender = emailSender;
         }
-        public IActionResult CanceledStatus()
+        //public IActionResult CanceledStatus()
+        //{
+        //    BackgroundJob.Schedule(() => SendCancellationEmail(), TimeSpan.FromMinutes(1));
+        //    return StatusCode(200);
+        //}
+
+        //public static void SendCancellationEmail()
+        //{
+        //     EmailSender.SendEmailAsync1("a@a.pl", "a", "a");
+        //    //Console.WriteLine("a");
+        //    //Console.WriteLine(DateTime.Now.ToString()+"\n");
+        //}
+        public IActionResult CanceledStatus(int id)
         {
-            BackgroundJob.Schedule(() => SendCancellationEmail(), TimeSpan.FromMinutes(1));
+            RecurringJob.AddOrUpdate(() => SendCancellationEmail(), Cron.Minutely());
             return StatusCode(200);
         }
 
-        public static void SendCancellationEmail()
+        public void SendCancellationEmail()
         {
-            //_emailSender.SendEmailAsync("a@a.pl", "a", "a");
-            Console.WriteLine("a");
-            Console.WriteLine(DateTime.Now.ToString()+"\n");
+            _emailSender.SendEmailAsync("a@a.pl", "a", "a1").Wait();
         }
-    }  
+    }
 }

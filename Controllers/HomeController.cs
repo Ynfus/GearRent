@@ -1,6 +1,11 @@
-﻿using GearRent.Models;
+﻿using GearRent.Data;
+using GearRent.Models;
+using Hangfire;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Diagnostics;
 
@@ -9,14 +14,20 @@ namespace GearRent.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private readonly IEmailSender _emailSender;
+        public HomeController(ILogger<HomeController> logger, IEmailSender emailSender)
         {
             _logger = logger;
+            _emailSender = emailSender;
         }
 
+        public void SendCancellationEmail()
+        {
+            _emailSender.SendEmailAsync("a@a.pl", "a", "a");
+        }
         public IActionResult Index()
         {
+            BackgroundJob.Schedule(() => SendCancellationEmail(), TimeSpan.FromMinutes(1));
 
             return View();
         }

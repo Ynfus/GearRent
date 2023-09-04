@@ -47,7 +47,8 @@ builder.Services.AddHangfire(hangfire =>
             UseRecommendedIsolationLevel = true,
             DisableGlobalLocks = true
         });
-    RecurringJob.AddOrUpdate(() => HangfireControler.SendCancellationEmail(), Cron.Minutely());
+    //RecurringJob.AddOrUpdate(() => HangfireControler.SendCancellationEmail(), Cron.Minutely());
+    RecurringJob.AddOrUpdate(() => EmailSender.SendEmailAsync1("a@a.pl","b","c"), Cron.Minutely());
 
     var server = new BackgroundJobServer(new BackgroundJobServerOptions
     {
