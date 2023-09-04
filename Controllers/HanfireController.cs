@@ -18,6 +18,7 @@ namespace GearRent.Controllers
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IEmailSender _emailSender;
+        private readonly IReservationService _reservationService;
 
 
 
@@ -43,13 +44,21 @@ namespace GearRent.Controllers
         //}
         public IActionResult CanceledStatus(int id)
         {
-            RecurringJob.AddOrUpdate(() => SendCancellationEmail(), Cron.Minutely());
+            RecurringJob.AddOrUpdate(() => DailyReservationCancellationAsync(), Cron.Minutely());
             return StatusCode(200);
         }
 
-        public void SendCancellationEmail()
+
+        public async Task DailyReservationCancellationAsync()
         {
-            _emailSender.SendEmailAsync("a@a.pl", "a", "a1").Wait();
+            var emailList = await _reservationService.CancelUnpaidReservationsAndSendEmailsAsync();
+            if (emailList != null)
+            {
+                foreach (var email in emailList)
+                {
+                    await _emailSender.SendEmailAsync(email, "a", "a1");
+                }
+            }
         }
     }
 }

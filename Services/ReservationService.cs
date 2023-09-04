@@ -9,6 +9,7 @@ namespace GearRent.Services
         Task<List<Reservation>> GetAllReservationsAsync();
         Task<Reservation> GetReservationByIdAsync(int id);
         Task<Reservation> GetReservationByIdAsyncInclude(int id);
+        Task<List<string>> CancelUnpaidReservationsAndSendEmailsAsync();
     }
 
     public class ReservationService : IReservationService
@@ -39,6 +40,29 @@ namespace GearRent.Services
         {
             return await _context.Reservations
                 .FirstOrDefaultAsync(r => r.Id == id);
+        }
+        public async Task<List<string>> CancelUnpaidReservationsAndSendEmailsAsync()
+        {
+            var userEmails = new List<string>();
+            var reservationsToCancel = await _context.Reservations
+                .Include(r => r.Car)
+                .Include(r => r.User)
+                .Where(r => r.Status == ReservationStatus.Unpaid && r.StartDate < DateTime.Now.AddDays(3))
+                .ToListAsync();
+
+            foreach (var reservation in reservationsToCancel)
+            {
+                reservation.Status = ReservationStatus.Canceled;
+
+                _context.Entry(reservation).State = EntityState.Modified;
+
+                userEmails.Add(reservation.User.Email);
+            }
+
+            await _context.SaveChangesAsync();
+
+
+            return userEmails;
         }
     }
 }

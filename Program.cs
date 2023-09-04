@@ -48,8 +48,11 @@ builder.Services.AddHangfire(hangfire =>
             DisableGlobalLocks = true
         });
     //RecurringJob.AddOrUpdate(() => HangfireControler.SendCancellationEmail(), Cron.Minutely());
-    RecurringJob.AddOrUpdate(() => EmailSender.SendEmailAsync1("a@a.pl","b","c"), Cron.Minutely());
+    //var isJobScheduled = RecurringJob.RemoveIfExists("unique-job-id");
 
+    var instance = new HangfireControler();
+        RecurringJob.AddOrUpdate(() => instance.DailyReservationCancellationAsync(), Cron.Daily);
+    
     var server = new BackgroundJobServer(new BackgroundJobServerOptions
     {
         ServerName = "hangfire-test",
@@ -79,7 +82,7 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-app.UseHangfireDashboard(); 
+app.UseHangfireDashboard();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
