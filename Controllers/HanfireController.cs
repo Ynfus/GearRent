@@ -42,23 +42,23 @@ namespace GearRent.Controllers
         //    //Console.WriteLine("a");
         //    //Console.WriteLine(DateTime.Now.ToString()+"\n");
         //}
-        public IActionResult CanceledStatus(int id)
-        {
-            RecurringJob.AddOrUpdate(() => DailyReservationCancellationAsync(), Cron.Minutely());
-            return StatusCode(200);
-        }
+        //public IActionResult CanceledStatus(int id)
+        //{
+        //    RecurringJob.AddOrUpdate(() => DailyReservationCancellationAsync(), Cron.Minutely());
+        //    return StatusCode(200);
+        //}
 
 
-        public async Task DailyReservationCancellationAsync()
-        {
-            var emailList = await _reservationService.CancelUnpaidReservationsAndSendEmailsAsync();
-            if (emailList != null)
-            {
-                foreach (var email in emailList)
-                {
-                    await _emailSender.SendEmailAsync(email, "a", "a1");
-                }
-            }
-        }
+        //public async Task DailyReservationCancellationAsync()
+        //{
+        //    var emailList = await _reservationService.CancelUnpaidReservationsAndSendEmailsAsync();
+        //    if (emailList != null)
+        //    {
+        //        foreach (var email in emailList)
+        //        {
+        //            await _emailSender.SendEmailAsync(email, "a", "a1");
+        //        }
+        //    }
+        //}
     }
 }

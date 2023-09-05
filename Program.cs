@@ -50,8 +50,8 @@ builder.Services.AddHangfire(hangfire =>
     //RecurringJob.AddOrUpdate(() => HangfireControler.SendCancellationEmail(), Cron.Minutely());
     //var isJobScheduled = RecurringJob.RemoveIfExists("unique-job-id");
 
-    var instance = new HangfireControler();
-        RecurringJob.AddOrUpdate(() => instance.DailyReservationCancellationAsync(), Cron.Daily);
+    //var instance = new HangfireControler();
+      //  RecurringJob.AddOrUpdate(() => instance.DailyReservationCancellationAsync(), Cron.Daily);
     
     var server = new BackgroundJobServer(new BackgroundJobServerOptions
     {
