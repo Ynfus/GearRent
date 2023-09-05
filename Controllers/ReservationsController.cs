@@ -6,6 +6,7 @@ using GearRent.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using GearRent.Services;
+using Hangfire;
 
 namespace GearRent.Controllers
 {
@@ -16,15 +17,17 @@ namespace GearRent.Controllers
         private readonly IUserService _userService;
         private readonly ICarService _carService;
         private readonly IReservationService _reservationService;
+        private readonly IBackgroundJobClient _backgroundJobClient;
 
         public ReservationsController(ApplicationDbContext context, IEmailSender emailSender,
-            IUserService userService, ICarService carService, IReservationService reservationService)
+            IUserService userService, ICarService carService, IReservationService reservationService, IBackgroundJobClient backgroundJobClient)
         {
             _context = context;
             _emailSender = emailSender;
             _userService = userService;
             _carService = carService;
             _reservationService = reservationService;
+            _backgroundJobClient = backgroundJobClient;
         }
 
         public async Task<IActionResult> Index()
@@ -67,7 +70,7 @@ namespace GearRent.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UserId,CarId,StartDate,EndDate,Status")] Reservation reservation)
+        public async Task<IActionResult> Create([Bind("Id,UserId,CarId,StartDate,EndDate,Status")] Reservation reservation, bool unpaid)
         {
             Car car = await _carService.GetCarAsync(reservation.CarId);
             if (car == null)
@@ -79,9 +82,46 @@ namespace GearRent.Controllers
             reservation.ReservationValue = value;
             _context.Add(reservation);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Checkout), reservation);
-        }
+            if (unpaid)
+            {
+                Console.WriteLine(reservation.Id+"000000");
+                return RedirectToAction("ThanksEmailUnpaid", "Reservations",new { id = reservation.Id } );
 
+            }
+            else
+            {
+                return RedirectToAction(nameof(Checkout), reservation);
+
+            }
+        }
+        public async Task<IActionResult> ThanksEmailUnpaid(int id)
+        {
+            Console.WriteLine(id + "1111");
+            string userId = HttpContext.User.Identity.IsAuthenticated ? HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value : null;
+            var reservation = await _context.Reservations.FindAsync(id);
+            bool emailSent = true;
+            var cancellationDate = reservation.StartDate.AddDays(-3);
+            _backgroundJobClient.Schedule<ReservationService>(
+                x => x.CancelUnpaidReservationsAndSendEmailsAsync(reservation.Id),
+                cancellationDate
+            );
+            try
+            {
+                Car car = await _carService.GetCarAsync(reservation.CarId);
+                var email = await _context.Users
+                    .Where(u => u.Id == reservation.UserId)
+                    .Select(u => u.Email)
+                    .FirstOrDefaultAsync();
+                var subject = $"Potwierdzenie rezerwacji {reservation.Id}";
+                var body = $"Twoja rezerwacja na {car.Make} {car.Model} została pomyślnie złożona.\nKwota zamówienia do opłacenia to: {reservation.ReservationValue}, pmaiętaj, aby opłacić zamówienie do 3 dni przed startem rezerwacji.";
+                await _emailSender.SendEmailAsync(email, subject, body);
+            }
+            catch (Exception)
+            {
+                emailSent = false;
+            }
+            return RedirectToAction("Thanks", "Reservations", new { id = id, emailSent });
+        }
 
         public async Task<IActionResult> Edit(int id)
         {
@@ -121,7 +161,7 @@ namespace GearRent.Controllers
                     .Select(u => u.Email)
                     .FirstOrDefaultAsync();
                 var subject = $"Potwierdzenie rezerwacji {reservation.Id}";
-                var body = $"Twoja rezerwacja na {car.Make} {car.Model} została pomyślnie złożona.\nOpłacona kwota zamówienia to: {reservation.ReservationValue}";
+                var body = $"Twoja rezerwacja na {car.Make} {car.Model} została pomyślnie złożona.\nNieopłacona kwota zamówienia to: {reservation.ReservationValue}";
                 await _emailSender.SendEmailAsync(email, subject, body);
             }
             catch (Exception)
@@ -130,6 +170,7 @@ namespace GearRent.Controllers
             }
             return RedirectToAction("Thanks", "Reservations", new { id = id, emailSent });
         }
+
         public async Task<IActionResult> Thanks(int id, bool emailSent)
         {
             Reservation reservation = await _reservationService.GetReservationByIdAsync(id);
