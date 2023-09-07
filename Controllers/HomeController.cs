@@ -21,14 +21,8 @@ namespace GearRent.Controllers
             _emailSender = emailSender;
         }
 
-        public void SendCancellationEmail()
-        {
-            _emailSender.SendEmailAsync("a@a.pl", "a", "a");
-        }
         public IActionResult Index()
         {
-            BackgroundJob.Schedule(() => SendCancellationEmail(), TimeSpan.FromMinutes(1));
-
             return View();
         }
 

@@ -90,9 +90,13 @@ namespace GearRent.Controllers
             }
             else
             {
-                return RedirectToAction(nameof(Checkout), reservation);
+                return RedirectToAction(nameof(Intermediate), new { reservation = reservation });
 
             }
+        }
+        public IActionResult Intermediate(Reservation reservation)
+        {
+            return RedirectToAction(nameof(Checkout), new { reservation });
         }
         public async Task<IActionResult> ThanksEmailUnpaid(int id)
         {

@@ -41,11 +41,16 @@
                 <button type="button" id="createButton" class="btn btn-primary mt-2">Create</button>
                 @if (ViewData["StartDate"] != null)
                 {
-                    DateTime startDate = (DateTime)ViewData["StartDate"]; 
-
-                    if (startDate.Date == DateTime.Now.Date)
-                    {              <button type="button" id="unpaidButton" class="btn btn-secondary mt-2">Create and Send Unpaid Email</button>
-
+                    string startDateStr = ViewData["StartDate"] as string;
+                    if (!string.IsNullOrEmpty(startDateStr))
+                    {
+                        if (DateTime.TryParse(startDateStr, out DateTime startDate))
+                        {
+                            if (startDate.Date >= DateTime.Now.Date.AddDays(3))
+                            {
+                                <button type="button" id="unpaidButton" class="btn btn-secondary mt-2">Create and Send Unpaid Email</button>
+                            }
+                        }
                     }
                 }
             </div>

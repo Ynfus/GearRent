@@ -47,12 +47,7 @@ builder.Services.AddHangfire(hangfire =>
             UseRecommendedIsolationLevel = true,
             DisableGlobalLocks = true
         });
-    //RecurringJob.AddOrUpdate(() => HangfireControler.SendCancellationEmail(), Cron.Minutely());
-    //var isJobScheduled = RecurringJob.RemoveIfExists("unique-job-id");
 
-    //var instance = new HangfireControler();
-      //  RecurringJob.AddOrUpdate(() => instance.DailyReservationCancellationAsync(), Cron.Daily);
-    
     var server = new BackgroundJobServer(new BackgroundJobServerOptions
     {
         ServerName = "hangfire-test",
@@ -68,6 +63,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IBackgroundJobClient, BackgroundJobClient>();
 
 var app = builder.Build();
 
