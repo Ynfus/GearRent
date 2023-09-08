@@ -213,7 +213,7 @@
                 selectedCarTag = carTagIndexPage;
                 document.querySelector('#selectedCarTag').value = carTagIndexPage;
 
-                localStorage.removeItem("selectedCarTag"); 
+                localStorage.removeItem("selectedCarTag");
             }
             console.log(selectedCarTag);
 
@@ -345,24 +345,60 @@
         $("#acceleration-range-slider").on("slidechange", applyFilters);
         $("#price-range-slider").on("slidechange", applyFilters);
 
+        //function initializeOrderLinks() {
+        //    const orderLinks = document.querySelectorAll('.order-link');
+        //    orderLinks.forEach(link => {
+        //        const carId = link.getAttribute('data-car-id');
+        //        link.addEventListener('click', event => {
+        //            event.preventDefault();
+        //            const selectedEndDate = document.querySelector('#endDate').value;
+        //            const selectedStartDate = document.querySelector('#startDate').value;
+        //            const selectedCarTag = document.querySelector('#selectedCarTag').value;
+        //            const selectedColor = document.querySelector('#selectedColor').value;
+        //            if (!selectedEndDate || !selectedStartDate) {
+        //                alert('Please select start and end dates.');
+        //                return;
+        //            }
+        //            const url = `@Url.Action("Create", "Reservations")?carId=${carId}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&selectedCarTag=${selectedCarTag}&selectedColor=${selectedColor}`;
+        //            window.location.href = url;
+        //        });
+        //    });
+        //}
+
         function initializeOrderLinks() {
             const orderLinks = document.querySelectorAll('.order-link');
             orderLinks.forEach(link => {
-                const carId = link.getAttribute('data-car-id');
                 link.addEventListener('click', event => {
                     event.preventDefault();
+                    const carId = link.getAttribute('data-car-id');
                     const selectedEndDate = document.querySelector('#endDate').value;
                     const selectedStartDate = document.querySelector('#startDate').value;
-                    const selectedCarTag = document.querySelector('#selectedCarTag').value;
-                    const selectedColor = document.querySelector('#selectedColor').value;
                     if (!selectedEndDate || !selectedStartDate) {
                         alert('Please select start and end dates.');
                         return;
                     }
-                    const url = `@Url.Action("Create", "Reservations")?carId=${carId}&startDate=${selectedStartDate}&endDate=${selectedEndDate}&selectedCarTag=${selectedCarTag}&selectedColor=${selectedColor}`;
-                    window.location.href = url;
+                    $.ajax({
+                        url: '/Reservations/SetSessionData',
+                        type: 'POST',
+                        data: {
+                            carId: carId,
+                            startDate: selectedStartDate,
+                            endDate: selectedEndDate
+                        },
+                        success: function (response) {
+                            window.location.href = '/Reservations/Create';
+                        },
+                        error: function (error) {
+                            console.error('AJAX error:', error);
+                        }
+                    });
                 });
             });
         }
+
+        initializeOrderLinks();
+
+
+
     });
 </script>
