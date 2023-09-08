@@ -82,7 +82,7 @@ app.UseHangfireDashboard();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-//app.UseSession();
+app.UseSession();
 app.UseCors("MyPolicy");
 app.UseAuthorization();
 
