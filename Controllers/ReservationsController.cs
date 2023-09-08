@@ -35,9 +35,9 @@ namespace GearRent.Controllers
             var applicationDbContext = await _reservationService.GetAllReservationsAsync();
             return View();
         }
-        public async Task<ActionResult> Checkout(string payment_intent, string payment_intent_client_secret, string redirect_status, Reservation reservation)
+        public async Task<ActionResult> Checkout(string payment_intent, string payment_intent_client_secret, string redirect_status, int id)
         {
-            ViewBag.MyValue = reservation.Id;
+            ViewBag.MyValue = id;
             return View();
         }
 
@@ -52,22 +52,36 @@ namespace GearRent.Controllers
 
             return View(reservation);
         }
-
-        public IActionResult Create(int carId, string startDate, string endDate)
+        [HttpGet]
+        public IActionResult Create()
         {
-
             string userId = HttpContext.User.Identity.IsAuthenticated ? HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value : null;
             if (userId == null)
             {
                 return Redirect("/Identity/Account/Login");
             }
+            int carId = HttpContext.Session.GetInt32("carId") ?? 0;
+            string startDate = HttpContext.Session.GetString("startDate");
+            string endDate = HttpContext.Session.GetString("endDate");
             ViewData["CarId"] = carId;
             ViewData["StartDate"] = startDate;
             ViewData["EndDate"] = endDate;
             ViewData["UserId"] = userId;
+            HttpContext.Session.Remove("carId");
+            HttpContext.Session.Remove("startDate");
+            HttpContext.Session.Remove("endDate");
+
             return View();
         }
+        [HttpPost]
+        public IActionResult SetSessionData(int carId, string startDate, string endDate)
+        {
+            HttpContext.Session.SetInt32("carId", carId);
+            HttpContext.Session.SetString("startDate", startDate);
+            HttpContext.Session.SetString("endDate", endDate);
 
+            return Ok();
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,UserId,CarId,StartDate,EndDate,Status")] Reservation reservation, bool unpaid)
@@ -90,13 +104,9 @@ namespace GearRent.Controllers
             }
             else
             {
-                return RedirectToAction(nameof(Intermediate), new { reservation = reservation });
+                return RedirectToAction(nameof(Checkout), new { id=reservation.Id });
 
             }
-        }
-        public IActionResult Intermediate(Reservation reservation)
-        {
-            return RedirectToAction(nameof(Checkout), new { reservation });
         }
         public async Task<IActionResult> ThanksEmailUnpaid(int id)
         {
