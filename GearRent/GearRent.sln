@@ -5,6 +5,8 @@ VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GearRent", "GearRent.csproj", "{5D796667-B016-4063-B9B9-6DA1C39868AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GearRentxUnit", "..\GearRentxUnit\GearRentxUnit.csproj", "{63140119-7E6C-4C81-B1A0-E0D820E6BB01}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{5D796667-B016-4063-B9B9-6DA1C39868AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D796667-B016-4063-B9B9-6DA1C39868AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D796667-B016-4063-B9B9-6DA1C39868AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63140119-7E6C-4C81-B1A0-E0D820E6BB01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63140119-7E6C-4C81-B1A0-E0D820E6BB01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63140119-7E6C-4C81-B1A0-E0D820E6BB01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63140119-7E6C-4C81-B1A0-E0D820E6BB01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
