@@ -32,3 +32,4 @@ GearRentxUnit/obj/Release/net7.0/GearRentxUnit.GeneratedMSBuildEditorConfig.edit
 *.cache
 *.editorconfig
 *.sqlite
+.vs/slnx.sqlite
