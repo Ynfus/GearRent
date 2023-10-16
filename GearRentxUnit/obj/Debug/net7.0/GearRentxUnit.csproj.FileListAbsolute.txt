@@ -372,3 +372,5 @@ C:\Users\barte\Documents\GitHub\GearRent\GearRentxUnit\obj\Debug\net7.0\refint\G
 C:\Users\barte\Documents\GitHub\GearRent\GearRentxUnit\obj\Debug\net7.0\GearRentxUnit.pdb
 C:\Users\barte\Documents\GitHub\GearRent\GearRentxUnit\obj\Debug\net7.0\GearRentxUnit.genruntimeconfig.cache
 C:\Users\barte\Documents\GitHub\GearRent\GearRentxUnit\obj\Debug\net7.0\ref\GearRentxUnit.dll
+C:\Users\barte\Documents\GitHub\GearRent\GearRentxUnit\bin\Debug\net7.0\Castle.Core.dll
+C:\Users\barte\Documents\GitHub\GearRent\GearRentxUnit\bin\Debug\net7.0\Moq.dll

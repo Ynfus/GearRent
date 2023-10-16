@@ -321,11 +321,8 @@
                 data: { ...data, pageNumber: pageNumber1 },
                 success: function (result, status, xhr) {
                     $('#filteredResults').html(result);
-                    console.log("11111");
                     totalPages = parseInt(xhr.getResponseHeader('X-Total-Pages'));
                     pageNumber = parseInt(xhr.getResponseHeader('X-Current-Page'));
-                    console.log(pageNumber, pageNumber, " 11111");
-
                     managePaginationButtons(pageNumber, totalPages);
                     initializeOrderLinks();
 

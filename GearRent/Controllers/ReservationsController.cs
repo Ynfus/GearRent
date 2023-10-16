@@ -175,7 +175,7 @@ namespace GearRent.Controllers
                     .Select(u => u.Email)
                     .FirstOrDefaultAsync();
                 var subject = $"Potwierdzenie rezerwacji {reservation.Id}";
-                var body = $"Twoja rezerwacja na {car.Make} {car.Model} została pomyślnie złożona.\nNieopłacona kwota zamówienia to: {reservation.ReservationValue}";
+                var body = $"Twoja rezerwacja na {car.Make} {car.Model} została pomyślnie złożona.\nOpłacona kwota zamówienia to: {reservation.ReservationValue}";
                 await _emailSender.SendEmailAsync(email, subject, body);
             }
             catch (Exception)
