@@ -57,3 +57,8 @@ GearRentxUnit/obj/GearRentxUnit.csproj.nuget.g.props
 GearRentxUnit/obj/project.assets.json
 GearRentxUnit/obj/project.nuget.cache
 .vs/slnx.sqlite
+*.dll
+*.pdb
+*.cache
+*.txt
+*.editorconfig
