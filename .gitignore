@@ -32,6 +32,10 @@ GearRentxUnit/obj/Release/net7.0/GearRentxUnit.GeneratedMSBuildEditorConfig.edit
 *.exe
 *.pdb
 *.txt
+**/bin/
+**/obj/
+*.TestResults/
+.xunit.xml
 GearRentxUnit/bin/Debug/net7.0/CoverletSourceRootsMapping
 GearRentxUnit/bin/Debug/net7.0/GearRent.dll
 GearRentxUnit/bin/Debug/net7.0/GearRent.exe
