@@ -1,6 +1,5 @@
 
 GearRentxUnit/bin/Release/net7.0/CoverletSourceRootsMapping
-.vs/slnx.sqlite
 GearRentxUnit/bin/Debug/net7.0/CoverletSourceRootsMapping
 GearRentxUnit/bin/Release/net7.0/CoverletSourceRootsMapping
 GearRentxUnit/obj/Debug/net7.0/GearRentxUnit.assets.cache
@@ -13,7 +12,6 @@ GearRentxUnit/obj/project.nuget.cache
 GearRentxUnit/obj/Release/net7.0/GearRentxUnit.assets.cache
 GearRentxUnit/obj/Release/net7.0/GearRentxUnit.csproj.AssemblyReference.cache
 GearRentxUnit/obj/Release/net7.0/GearRentxUnit.GeneratedMSBuildEditorConfig.editorconfig
-.vs/slnx.sqlite
 GearRentxUnit/bin/Debug/net7.0/CoverletSourceRootsMapping
 GearRentxUnit/bin/Release/net7.0/CoverletSourceRootsMapping
 GearRentxUnit/obj/Debug/net7.0/GearRentxUnit.assets.cache
@@ -26,12 +24,8 @@ GearRentxUnit/obj/project.nuget.cache
 GearRentxUnit/obj/Release/net7.0/GearRentxUnit.assets.cache
 GearRentxUnit/obj/Release/net7.0/GearRentxUnit.csproj.AssemblyReference.cache
 GearRentxUnit/obj/Release/net7.0/GearRentxUnit.GeneratedMSBuildEditorConfig.editorconfig
-*.cache
-*.cache
 *.sqlite
-*.cache
 *.editorconfig
-*.sqlite
 .vs/slnx.sqlite
 *.dll
 *.exe
@@ -56,11 +50,4 @@ GearRentxUnit/obj/GearRentxUnit.csproj.nuget.dgspec.json
 GearRentxUnit/obj/GearRentxUnit.csproj.nuget.g.props
 GearRentxUnit/obj/project.assets.json
 GearRentxUnit/obj/project.nuget.cache
-.vs/slnx.sqlite
-*.dll
-*.pdb
-*.cache
-*.txt
-*.editorconfig
-*.sqlite
-*.pdb
+

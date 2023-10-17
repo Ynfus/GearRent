@@ -3,7 +3,14 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-*.[Cc]ache
+*.sqlite
+*.cache
+*.editorconfig
+.vs/slnx.sqlite
+*.dll
+*.exe
+*.pdb
+*.txt
 # User-specific files
 *.rsuser
 *.suo
