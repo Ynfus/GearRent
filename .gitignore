@@ -3,6 +3,16 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+**/bin/
+**/obj/
+*.TestResults/
+.xunit.xml
+
+**/bin/
+**/GearRentxUnit/obj/
+*/GearRentxUnit/.TestResults/
+./GearRentxUnit/.xunit.xml
+
 *.sqlite
 *.cache
 *.editorconfig
