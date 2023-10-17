@@ -6,12 +6,8 @@
 **/bin/
 **/obj/
 *.TestResults/
-.xunit.xml
-
-**/bin/
-**/GearRentxUnit/obj/
-*/GearRentxUnit/.TestResults/
-./GearRentxUnit/.xunit.xml
+*.pdb
+*.xml
 
 *.sqlite
 *.cache
