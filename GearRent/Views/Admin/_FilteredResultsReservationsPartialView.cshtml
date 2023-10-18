@@ -16,6 +16,20 @@
                     <i class="fa fa-trash"></i>
                 </button>
             }
+
+            @if (reservation.Status == ReservationStatus.Approved && DateTime.Now.Date == reservation.StartDate.Date)
+            {
+                <button class="start-link" id="startBtn" data-reservation-id="@reservation.Id">
+                    <i class="fa fa-play"></i>
+                </button>
+            }
+            else if (reservation.Status == ReservationStatus.InProgress)
+            {
+                <button class="start-link">
+                    <i class="fa fa-stop" id="finishBtn" data-reservation-id="@reservation.Id"></i>
+                </button>
+            }
+
         </td>
     </tr>
 }
