@@ -244,6 +244,11 @@ tr {
     background:inherit;
     border:none;
 }
+.start-link {
+    text-decoration:none;
+    background:inherit;
+    border:none;
+}
 
 
 
