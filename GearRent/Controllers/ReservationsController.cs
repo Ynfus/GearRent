@@ -264,9 +264,52 @@ namespace GearRent.Controllers
             catch (Exception ex) { }
             await _context.SaveChangesAsync();
             return StatusCode(200);
-
-
         }
+        public async Task<IActionResult> ManageReservation(int id, string action)
+        {
+            var reservation = await _reservationService.GetReservationByIdAsync(id);
+
+            if (reservation != null)
+            {
+                switch (action)
+                {
+                    case "cancel":
+                        reservation.Status = ReservationStatus.Canceled;
+                        break;
+                    case "start":
+                        reservation.Status = ReservationStatus.InProgress;
+                        break;
+                    case "finish":
+                        reservation.Status = ReservationStatus.Finished;
+                        break;
+                    default:
+                        return StatusCode(400); 
+                }
+
+                try
+                {
+                    Car car = await _carService.GetCarAsync(reservation.CarId);
+                    var email = await _context.Users
+                        .Where(u => u.Id == reservation.UserId)
+                        .Select(u => u.Email)
+                        .FirstOrDefaultAsync();
+                    var subject = $"Zmiana statusu rezerwacji {reservation.Id}";
+                    var body = $"Status Twojej rezerwacji na {car.Make} {car.Model} został zmieniony na {reservation.Status}.";
+                    await _emailSender.SendEmailAsync(email, subject, body);
+                }
+                catch (Exception ex)
+                {
+                }
+
+                await _context.SaveChangesAsync();
+                return StatusCode(200);
+            }
+            else
+            {
+                return StatusCode(404);
+            }
+        }
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
