@@ -12,8 +12,8 @@
         <td>
             @if (reservation.Status == ReservationStatus.Approved || reservation.Status == ReservationStatus.Unpaid)
             {
-                <button class="cancel-link" data-reservation-id="@reservation.Id">
-                    <i class="fa fa-trash"></i>
+                <button class="start-link" >
+                    <i class="fa fa-trash" id="cancelBtn" data-reservation-id="@reservation.Id"></i>
                 </button>
             }
 
