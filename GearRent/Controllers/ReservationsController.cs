@@ -268,6 +268,7 @@ namespace GearRent.Controllers
         public async Task<IActionResult> ManageReservation(int id, string action)
         {
             var reservation = await _reservationService.GetReservationByIdAsync(id);
+            string state;
 
             if (reservation != null)
             {
@@ -275,12 +276,15 @@ namespace GearRent.Controllers
                 {
                     case "cancel":
                         reservation.Status = ReservationStatus.Canceled;
+                        state = "anulowana";
                         break;
                     case "start":
                         reservation.Status = ReservationStatus.InProgress;
+                        state = "w trakcie";
                         break;
                     case "finish":
                         reservation.Status = ReservationStatus.Finished;
+                        state = "zakończona";
                         break;
                     default:
                         return StatusCode(400); 
