@@ -23,7 +23,7 @@ namespace GearRent.Controllers
 
         public IActionResult Index()
         {
-            return RedirectToAction("BillCreate", "Bill", 2092 );
+            //return RedirectToAction("BillCreate", "Bill", 2092 );
 
             return View();
         }

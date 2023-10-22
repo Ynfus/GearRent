@@ -26,7 +26,7 @@ namespace GearRent.Data
 
             builder.Entity<Reservation>()
                 .HasOne(r => r.User)
-                .WithMany(u => u.Reservations)
+                .WithMany()
                 .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         }

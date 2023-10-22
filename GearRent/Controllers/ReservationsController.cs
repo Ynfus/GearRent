@@ -298,7 +298,7 @@ namespace GearRent.Controllers
                         .Select(u => u.Email)
                         .FirstOrDefaultAsync();
                     var subject = $"Zmiana statusu rezerwacji {reservation.Id}";
-                    var body = $"Status Twojej rezerwacji na {car.Make} {car.Model} został zmieniony na {reservation.Status}.";
+                    var body = $"Status Twojej rezerwacji na {car.Make} {car.Model} został zmieniony na {state}.";
                     await _emailSender.SendEmailAsync(email, subject, body);
                 }
                 catch (Exception ex)

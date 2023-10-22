@@ -12,21 +12,21 @@
         <td>
             @if (reservation.Status == ReservationStatus.Approved || reservation.Status == ReservationStatus.Unpaid)
             {
-                <button class="start-link" >
-                    <i class="fa fa-trash" id="cancelBtn" data-reservation-id="@reservation.Id"></i>
+                <button class="state-button" >
+                    <i class="fa fa-ban" id="cancelBtn" data-reservation-id="@reservation.Id"></i>
                 </button>
             }
 
             @if (reservation.Status == ReservationStatus.Approved && DateTime.Now.Date == reservation.StartDate.Date)
             {
-                <button class="start-link" id="startBtn" data-reservation-id="@reservation.Id">
-                    <i class="fa fa-play"></i>
+                <button class="state-button" >
+                    <i class="fa fa-play play-button" style="color: #2fd04a;" id="startBtn" data-reservation-id="@reservation.Id"></i>
                 </button>
             }
             else if (reservation.Status == ReservationStatus.InProgress)
             {
-                <button class="start-link">
-                    <i class="fa fa-stop" id="finishBtn" data-reservation-id="@reservation.Id"></i>
+                <button class="state-button">
+                    <i class="fa fa-stop stop-button" id="finishBtn" data-reservation-id="@reservation.Id"></i>
                 </button>
             }
 
