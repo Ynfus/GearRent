@@ -78,7 +78,7 @@
         </tr>
     </thead>
     <tbody id="filteredResults">
-        @foreach (var reservation in Model)
+       @* @foreach (var reservation in Model)
         {
             <tr>
                 <td>@reservation.Id</td>
@@ -95,7 +95,7 @@
 
                 </td>
             </tr>
-        }
+        }*@
     </tbody>
 </table>
 @*@{
@@ -223,32 +223,73 @@
         $('[name^="show"]').change(applyFilters);
 
         document.addEventListener("click", function (event) {
-            if (event.target.classList.contains("cancel-link")) {
-                event.preventDefault();
-                const reservationId = event.target.getAttribute("data-reservation-id");
-                confirmDelete(reservationId);
+            if (event.target.id === "cancelBtn") {
+                handleAction(event.target, "cancel");
+            }
+            else if (event.target.id === "startBtn") {
+                handleAction(event.target, "start");
+            }
+            else if (event.target.id === "finishBtn") {
+                handleAction(event.target, "finish");
             }
         });
 
-        function confirmDelete(reservationId) {
-            if (confirm(`Are you sure you want to cancel the reservation with ID ${reservationId}?`)) {
-                cancelReservation(reservationId);
+        function handleAction(button, action) {
+            event.preventDefault();
+            const reservationId = button.getAttribute("data-reservation-id");
+            let confirmationMessage;
+
+            switch (action) {
+                case "cancel":
+                    confirmationMessage = `Are you sure you want to cancel the reservation with ID ${reservationId}?`;
+                    break;
+                case "start":
+                    confirmationMessage = `Are you sure you want to start the reservation with ID ${reservationId}?`;
+                    break;
+                case "finish":
+                    confirmationMessage = `Are you sure you want to finish the reservation with ID ${reservationId}?`;
+                    break;
+                default:
+                    break;
+            }
+
+            if (confirmationMessage && confirm(confirmationMessage)) {
+                if (action === "cancel") {
+                    cancelReservation(reservationId);
+                } else if (action === "start") {
+                    startReservation(reservationId);
+                } else if (action === "finish") {
+                    finishReservation(reservationId);
+                }
             }
         }
 
-        function cancelReservation(reservationId) {
+        function performReservationAction(reservationId, action) {
             $.ajax({
-                url: '@Url.Action("CanceledStatus", "Reservations")',
+                url: `@Url.Action("ManageReservation", "Reservations")`, 
                 type: 'PUT',
-                data: { id: reservationId },
+                data: { id: reservationId, action: action },
                 success: function () {
                     applyFilters();
                 },
                 error: function (xhr, status, error) {
                     console.error(error);
-                    alert('An error occurred while canceling the reservation.');
+                    alert(`An error occurred while ${action} the reservation.`);
                 }
             });
         }
+
+        function cancelReservation(reservationId) {
+            performReservationAction(reservationId, 'cancel');
+        }
+
+        function startReservation(reservationId) {
+            performReservationAction(reservationId, 'start');
+        }
+
+        function finishReservation(reservationId) {
+            performReservationAction(reservationId, 'finish');
+        }
+
     });
 </script>
