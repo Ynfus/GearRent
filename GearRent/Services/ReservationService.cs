@@ -36,10 +36,12 @@ namespace GearRent.Services
 
         public async Task<Reservation> GetReservationByIdAsyncInclude(int id)
         {
-            return await _context.Reservations
+            var reservation = await _context.Reservations
                 .Include(r => r.Car)
                 .Include(r => r.User)
-                .FirstOrDefaultAsync(r => r.Id == id);
+                .FirstAsync(r => r.Id == id);
+
+            return reservation;
         }
         public async Task<Reservation> GetReservationByIdAsync(int id)
         {

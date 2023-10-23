@@ -9,6 +9,8 @@ using Hangfire;
 using Hangfire.SqlServer;
 using System.Configuration;
 using GearRent.Controllers;
+using DinkToPdf.Contracts;
+using DinkToPdf;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -60,6 +62,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
