@@ -114,6 +114,12 @@ namespace GearRent.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
+                    if (HttpContext.Session.GetInt32("carId") != null &&
+      HttpContext.Session.GetString("startDate") != null &&
+      HttpContext.Session.GetString("endDate") != null)
+                    {
+                        return RedirectToAction("Create","Reservations");
+                    }
                     _logger.LogInformation("User logged in.");
                     return LocalRedirect(returnUrl);
                 }
