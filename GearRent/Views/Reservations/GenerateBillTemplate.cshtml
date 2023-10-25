@@ -1,0 +1,342 @@
+﻿@model BillModel
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "";
+
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+<style>
+    /* reset */
+
+    body {
+        background: none;
+        box-shadow: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    span:empty {
+        display: none;
+    }
+
+    .add, .cut {
+        display: none;
+    }
+    /* content editable */
+
+    *[contenteditable] {
+        border-radius: 0.25em;
+        min-width: 1em;
+        outline: 0;
+    }
+
+
+    span[contenteditable] {
+        display: inline-block;
+    }
+
+    /* heading */
+
+    h1 {
+        font: bold 100% sans-serif;
+        letter-spacing: 0.5em;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    /* table */
+
+    table {
+        font-size: 75%;
+        table-layout: fixed;
+        width: 100%;
+    }
+
+    table {
+        border-collapse: separate;
+        border-spacing: 2px;
+    }
+
+    th, td {
+        border-width: 1px;
+        padding: 0.5em;
+        position: relative;
+        text-align: left;
+    }
+
+    th, td {
+        border-radius: 0.25em;
+        border-style: solid;
+    }
+
+    th {
+        background: #EEE;
+        border-color: #BBB;
+    }
+
+    td {
+        border-color: #DDD;
+    }
+
+    /* page */
+
+    html {
+        font: 16px/1 'Open Sans', sans-serif;
+        overflow: auto;
+        padding: 0.5in;
+    }
+
+    html {
+        background: white;
+        cursor: default;
+    }
+
+    body {
+        box-sizing: border-box;
+        margin: 0;
+        overflow: hidden;
+        padding: 0.5in;
+        width:100%;
+        height:100%;
+    }
+
+    body {
+        background: #FFF;
+       /* border-radius: 1px;
+        box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);*/
+    }
+
+    /* header */
+
+    header {
+        margin: 0 0 3em;
+    }
+
+        header:after {
+            clear: both;
+            content: "";
+            display: table;
+        }
+
+        header h1 {
+            background: #000;
+            border-radius: 0.25em;
+            color: #FFF;
+            margin: 0 0 1em;
+            padding: 0.5em 0;
+        }
+
+        header address {
+            float: left;
+            font-size: 75%;
+            font-style: normal;
+            line-height: 1.25;
+            margin: 0 1em 1em 0;
+        }
+
+            header address p {
+                margin: 0 0 0.25em;
+            }
+
+        header span, header img {
+            display: block;
+            float: right;
+        }
+
+        header span {
+            margin: 0 0 1em 1em;
+            max-height: 25%;
+            max-width: 60%;
+            position: relative;
+        }
+
+        header img {
+            max-height: 100%;
+            max-width: 100%;
+        }
+
+        header input {
+            cursor: pointer;
+            -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+            height: 100%;
+            left: 0;
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            width: 100%;
+        }
+
+    /* article */
+
+    article, article address, table.meta, table.inventory {
+        margin: 0 0 3em;
+    }
+
+        article:after {
+            clear: both;
+            content: "";
+            display: table;
+        }
+
+        article h1 {
+            clip: rect(0 0 0 0);
+            position: absolute;
+        }
+
+        article address {
+            float: left;
+            font-size: 125%;
+            font-weight: bold;
+        }
+
+    /* table meta & balance */
+
+    table.meta, table.balance {
+        float: right;
+        width: 36%;
+    }
+
+        table.meta:after, table.balance:after {
+            clear: both;
+            content: "";
+            display: table;
+        }
+
+        /* table meta */
+
+        table.meta th {
+            width: 40%;
+        }
+
+        table.meta td {
+            width: 60%;
+        }
+
+    /* table items */
+
+    table.inventory {
+        clear: both;
+        width: 100%;
+    }
+
+        table.inventory th {
+            font-weight: bold;
+            text-align: center;
+        }
+
+        table.inventory td:nth-child(1) {
+            width: 26%;
+        }
+
+        table.inventory td:nth-child(2) {
+            width: 38%;
+        }
+
+        table.inventory td:nth-child(3) {
+            text-align: right;
+            width: 12%;
+        }
+
+        table.inventory td:nth-child(4) {
+            text-align: right;
+            width: 12%;
+        }
+
+        table.inventory td:nth-child(5) {
+            text-align: right;
+            width: 12%;
+        }
+
+    /* table balance */
+
+    table.balance th, table.balance td {
+        width: 50%;
+    }
+
+    table.balance td {
+        text-align: right;
+    }
+
+    /* aside */
+
+    aside h1 {
+        border: none;
+        border-width: 0 0 1px;
+        margin: 0 0 1em;
+    }
+
+    aside h1 {
+        border-color: #999;
+        border-bottom-style: solid;
+    }
+
+   
+
+</style>
+<body>
+    <header>
+        <h1>Faktura</h1>
+        <address>
+            <p id="name">@Model.Name</p>
+            <p id="address">101 E. Chapman Ave<br>Orange, CA 92866</p>
+            <p id="phoneNumber">123 123 123</p>
+        </address>
+    </header>
+    <article>
+        <h1>Recipienta</h1>
+        <address>
+            <p id="recipientName">GearRent<br>c/o Some Guy</p>
+        </address>
+        <table class="meta">
+            <tr>
+                <th><span>Faktura #</span></th>
+                <td><span id="billId">@Model.BillId</span></td>
+            </tr>
+            <tr>
+                <th><span>Data</span></th>
+                <td><span id="date">@Model.Date</span></td>
+            </tr>
+            <tr>
+                <th><span>Kwota do zapłaty</span></th>
+                <td><span id="totalCost">@Model.TotalValue</span><span id="currencyPrefix">zł</span></td>
+            </tr>
+        </table>
+        <table class="inventory">
+            <thead>
+                <tr>
+                    <th><span>Wynajmowany samochód</span></th>
+                    <th><span>Cena za dzień</span></th>
+                    <th><span>Ilośc dni</span></th>
+                    <th><span>Kwota</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="itemName">@Model.CarModel</span></td>
+                    <td><span class="dailyCost">150.00</span><span class="currencyPrefix">zł</span></td>
+                    <td><span class="days">@Model.Days</span></td>
+                    <td><span class="itemTotalCost">@Model.TotalValue</span><span class="currencyPrefix">zł</span></td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="balance">
+            <tr>
+                <th><span>Do zapłaty</span></th>
+                <td><span id="invoiceTotal">@Model.TotalValue</span><span class="currencyPrefix">zł</span></td>
+            </tr>
+            <tr>
+                <th><span>Opłacono</span></th>
+                <td><span id="amountPaid">@Model.TotalValue</span><span class="currencyPrefix">zł</span></td>
+            </tr>
+        </table>
+    </article>
+</body>
+</html>
