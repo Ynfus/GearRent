@@ -217,7 +217,7 @@ namespace GearRentxUnit
             });
             _context.SaveChanges();
 
-            var emailSender = new Mock<IEmailSender>();
+            var emailSender = new Mock<ICustomEmailSender>();
             var carService = new Mock<ICarService>();
             carService.Setup(c => c.GetCarAsync(It.IsAny<int>())).ReturnsAsync(new Car
             {
@@ -283,7 +283,7 @@ namespace GearRentxUnit
 
 
 
-            var emailSender = new Mock<IEmailSender>();
+            var emailSender = new Mock<ICustomEmailSender>();
             var carService = new Mock<ICarService>();
             carService.Setup(c => c.GetCarAsync(It.IsAny<int>())).ReturnsAsync(new Car
             {
