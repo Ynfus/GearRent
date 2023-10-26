@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using GearRent.Services;
 
 namespace GearRent.Areas.Identity.Pages.Account
 {
@@ -27,7 +28,7 @@ namespace GearRent.Areas.Identity.Pages.Account
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IUserStore<IdentityUser> _userStore;
         private readonly IUserEmailStore<IdentityUser> _emailStore;
-        private readonly IEmailSender _emailSender;
+        private readonly ICustomEmailSender _emailSender;
         private readonly ILogger<ExternalLoginModel> _logger;
 
         public ExternalLoginModel(
@@ -35,7 +36,7 @@ namespace GearRent.Areas.Identity.Pages.Account
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
             ILogger<ExternalLoginModel> logger,
-            IEmailSender emailSender)
+            ICustomEmailSender emailSender)
         {
             _signInManager = signInManager;
             _userManager = userManager;

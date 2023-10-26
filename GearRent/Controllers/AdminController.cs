@@ -16,7 +16,7 @@ namespace GearRent.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IEmailSender _emailSender;
+        private readonly ICustomEmailSender _emailSender;
         private readonly IUserService _userService;
         private readonly ICarService _carService;
         private readonly IReservationService _reservationService;
@@ -24,7 +24,7 @@ namespace GearRent.Controllers
 
 
         public AdminController(ApplicationDbContext context, UserManager<IdentityUser> userManager,
-            RoleManager<IdentityRole> roleManager, IEmailSender emailSender, ICarService carService,
+            RoleManager<IdentityRole> roleManager, ICustomEmailSender emailSender, ICarService carService,
             IReservationService reservationService, IUserService userService, IEmployeeService employeeService)
         {
             _context = context;

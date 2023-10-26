@@ -16,10 +16,10 @@ namespace GearRent.Services
     public class ReservationService : IReservationService
     {
         private readonly ApplicationDbContext _context;
-        private readonly IEmailSender _emailSender;
+        private readonly ICustomEmailSender _emailSender;
         private readonly ICarService _carService;
 
-        public ReservationService(ApplicationDbContext context, IEmailSender emailSender, ICarService carService)
+        public ReservationService(ApplicationDbContext context, ICustomEmailSender emailSender, ICarService carService)
         {
             _context = context;
             _emailSender = emailSender;

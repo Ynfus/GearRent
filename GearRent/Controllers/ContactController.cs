@@ -1,4 +1,5 @@
 ﻿using GearRent.Models;
+using GearRent.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
@@ -8,8 +9,8 @@ namespace GearRent.Controllers
 {
     public class ContactController : Controller
     {
-        private readonly IEmailSender _emailSender;
-        public ContactController(IEmailSender emailSender)
+        private readonly ICustomEmailSender _emailSender;
+        public ContactController(ICustomEmailSender emailSender)
         {
             _emailSender = emailSender;
         }

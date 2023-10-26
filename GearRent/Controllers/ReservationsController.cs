@@ -7,20 +7,25 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using GearRent.Services;
 using Hangfire;
+using DinkToPdf;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using DinkToPdf.Contracts;
 
 namespace GearRent.Controllers
 {
     public class ReservationsController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly IEmailSender _emailSender;
+        private readonly ICustomEmailSender _emailSender;
         private readonly IUserService _userService;
         private readonly ICarService _carService;
         private readonly IReservationService _reservationService;
         private readonly IBackgroundJobClient _backgroundJobClient;
+        private readonly IConverter _pdfConverter;
 
-        public ReservationsController(ApplicationDbContext context, IEmailSender emailSender,
-            IUserService userService, ICarService carService, IReservationService reservationService, IBackgroundJobClient backgroundJobClient)
+        public ReservationsController(ApplicationDbContext context, ICustomEmailSender emailSender,
+            IUserService userService, ICarService carService, IReservationService reservationService,IConverter pdfConverter, IBackgroundJobClient backgroundJobClient)
         {
             _context = context;
             _emailSender = emailSender;
@@ -28,6 +33,7 @@ namespace GearRent.Controllers
             _carService = carService;
             _reservationService = reservationService;
             _backgroundJobClient = backgroundJobClient;
+            _pdfConverter= pdfConverter;
         }
 
         public async Task<IActionResult> Index()
@@ -167,6 +173,8 @@ namespace GearRent.Controllers
             reservation.Status = ReservationStatus.Approved;
             await _context.SaveChangesAsync();
             bool emailSent = true;
+            var pdf =await BillCreate(2092);
+
             try
             {
                 Car car = await _carService.GetCarAsync(reservation.CarId);
@@ -176,7 +184,7 @@ namespace GearRent.Controllers
                     .FirstOrDefaultAsync();
                 var subject = $"Potwierdzenie rezerwacji {reservation.Id}";
                 var body = $"Twoja rezerwacja na {car.Make} {car.Model} została pomyślnie złożona.\nOpłacona kwota zamówienia to: {reservation.ReservationValue}";
-                await _emailSender.SendEmailAsync(email, subject, body);
+                await _emailSender.SendEmailWithAttachmentAsync(email, subject, body, pdf, $"faktura{reservation.Id}.pdf");
             }
             catch (Exception)
             {
@@ -331,6 +339,66 @@ namespace GearRent.Controllers
         private bool ReservationExists(int id)
         {
             return (_context.Reservations?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+        public async Task<byte[]> BillCreate(int reservationId)
+        {
+
+            var reservation = await _reservationService.GetReservationByIdAsyncInclude(2091);
+            if (reservation == null)
+            {
+                return null;
+            }
+            var billModel = new BillModel
+            {
+                BillId = 1,
+                Name = /*"nnnnl",*/reservation.User.UserName,
+                CarModel = /*"nnnnl",*/$"{reservation.Car.Make} {reservation.Car.Model}",
+                Date = DateTime.Now.Date.ToString("d"),
+                TotalValue = /*1,*/reservation.ReservationValue,
+                Days = /*8*/(int)(reservation.EndDate - reservation.StartDate).TotalDays
+            };
+            // return View("GenerateBillTemplate",billModel);
+            var htmlContent = ViewToString("GenerateBillTemplate", billModel);
+            var doc = new HtmlToPdfDocument
+            {
+                GlobalSettings =
+            {
+                PaperSize = DinkToPdf.PaperKind.A4,
+                Orientation = Orientation.Portrait,
+                Margins = new MarginSettings
+                {
+                    Top = 0,
+                    Right = 0,
+                    Bottom = 0,
+                    Left = 0
+                },
+
+            },
+                Objects =
+            {
+                new ObjectSettings
+                {
+                    HtmlContent = htmlContent,
+
+                }
+            }
+            };
+
+            var pdfBytes = _pdfConverter.Convert(doc);
+            return pdfBytes;
+        }
+
+        private string ViewToString(string viewName, object model)
+        {
+            ViewData.Model = model;
+            using (var writer = new StringWriter())
+            {
+                var viewEngine = HttpContext.RequestServices.GetRequiredService<ICompositeViewEngine>();
+                var view = viewEngine.FindView(ControllerContext, viewName, false).View;
+                var viewContext = new ViewContext(ControllerContext, view, ViewData, TempData, writer, new HtmlHelperOptions());
+                view.RenderAsync(viewContext).GetAwaiter().GetResult();
+                return writer.GetStringBuilder().ToString();
+            }
         }
     }
 }

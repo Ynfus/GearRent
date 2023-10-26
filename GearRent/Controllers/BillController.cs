@@ -17,7 +17,7 @@ namespace GearRent.Controllers
     public class BillController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly IEmailSender _emailSender;
+        private readonly ICustomEmailSender _emailSender;
         private readonly IUserService _userService;
         private readonly ICarService _carService;
         private readonly IReservationService _reservationService;
@@ -25,7 +25,7 @@ namespace GearRent.Controllers
         private readonly IConverter _pdfConverter;
 
 
-        public BillController(ApplicationDbContext context, IEmailSender emailSender,
+        public BillController(ApplicationDbContext context, ICustomEmailSender emailSender,
             IUserService userService, ICarService carService, IReservationService reservationService, IBackgroundJobClient backgroundJobClient, IConverter pdfConverter)
         {
             _context = context;

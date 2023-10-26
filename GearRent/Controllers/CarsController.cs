@@ -18,11 +18,11 @@ namespace GearRent.Controllers
 
         private readonly ICarService _carService;
         private readonly IReservationService _reservationService;
-        private readonly IEmailSender _emailSender;
-        private readonly IUserService _userService;
+        private readonly ICustomEmailSender _emailSender;
+        private readonly IUserService _userService; 
         private readonly IWebHostEnvironment _IWebHostEnvironment;
 
-        public CarsController(ApplicationDbContext context, ICarService carService, IReservationService reservationService, IEmailSender emailSender, IUserService userService, IWebHostEnvironment webHostEnvironment)
+        public CarsController(ApplicationDbContext context, ICarService carService, IReservationService reservationService, ICustomEmailSender emailSender, IUserService userService, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             _carService = carService;

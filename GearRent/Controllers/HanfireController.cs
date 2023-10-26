@@ -17,13 +17,13 @@ namespace GearRent.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IEmailSender _emailSender;
+        private readonly ICustomEmailSender _emailSender;
         private readonly IReservationService _reservationService;
 
 
 
         public HangfireControler(ApplicationDbContext context, UserManager<IdentityUser> userManager,
-            RoleManager<IdentityRole> roleManager, IEmailSender emailSender)
+            RoleManager<IdentityRole> roleManager, ICustomEmailSender emailSender)
         {
             _context = context;
             _userManager = userManager;

@@ -8,14 +8,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Diagnostics;
+using GearRent.Services;
 
 namespace GearRent.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly IEmailSender _emailSender;
-        public HomeController(ILogger<HomeController> logger, IEmailSender emailSender)
+        private readonly ICustomEmailSender _emailSender;
+        public HomeController(ILogger<HomeController> logger, ICustomEmailSender emailSender)
         {
             _logger = logger;
             _emailSender = emailSender;

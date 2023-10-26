@@ -60,7 +60,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
-builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddTransient<ICustomEmailSender, CustomEmailSender>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
 builder.Services.AddScoped<IReservationService, ReservationService>();
