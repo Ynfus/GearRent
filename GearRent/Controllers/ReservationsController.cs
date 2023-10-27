@@ -350,14 +350,13 @@ namespace GearRent.Controllers
             }
             var billModel = new BillModel
             {
-                BillId = 1,
-                Name = /*"nnnnl",*/reservation.User.UserName,
-                CarModel = /*"nnnnl",*/$"{reservation.Car.Make} {reservation.Car.Model}",
+                BillId = reservation.Id,
+                Name = reservation.User.UserName,
+                CarModel = $"{reservation.Car.Make} {reservation.Car.Model}",
                 Date = DateTime.Now.Date.ToString("d"),
-                TotalValue = /*1,*/reservation.ReservationValue,
-                Days = /*8*/(int)(reservation.EndDate - reservation.StartDate).TotalDays
+                TotalValue = reservation.ReservationValue,
+                Days = (int)(reservation.EndDate - reservation.StartDate).TotalDays
             };
-            // return View("GenerateBillTemplate",billModel);
             var htmlContent = ViewToString("GenerateBillTemplate", billModel);
             var doc = new HtmlToPdfDocument
             {
