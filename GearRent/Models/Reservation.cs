@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
 namespace GearRent.Models
@@ -15,5 +16,7 @@ namespace GearRent.Models
         public ReservationStatus Status { get; set; } = ReservationStatus.Unpaid;
 
         public decimal ReservationValue { get; set; }
+        public int? BillingInfoId { get; set; }
+        public BillingInfo BillingInfo { get; set; }
     }
 }
