@@ -61,23 +61,34 @@ namespace GearRent.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            string userId = HttpContext.User.Identity.IsAuthenticated ? HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value : null;
-            if (userId == null)
+            if (!User.Identity.IsAuthenticated)
             {
                 return Redirect("/Identity/Account/Login");
             }
+
+            string userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             int carId = HttpContext.Session.GetInt32("carId") ?? 0;
             string startDate = HttpContext.Session.GetString("startDate");
             string endDate = HttpContext.Session.GetString("endDate");
-            ViewData["CarId"] = carId;
-            ViewData["StartDate"] = startDate;
-            ViewData["EndDate"] = endDate;
-            ViewData["UserId"] = userId;
+
+            var billingInfoOptions = _context.BillingInfos
+                .Where(b => b.UserId == userId)
+                .ToList();
+
+            var viewModel = new CreateReservationViewModel
+            {
+                CarId = carId,
+                StartDate = startDate,
+                EndDate = endDate,
+                UserId = userId,
+                BillingInfoOptions = billingInfoOptions
+            };
+
             HttpContext.Session.Remove("carId");
             HttpContext.Session.Remove("startDate");
             HttpContext.Session.Remove("endDate");
 
-            return View();
+            return View(viewModel);
         }
         [HttpPost]
         public IActionResult SetSessionData(int carId, string startDate, string endDate)
@@ -90,7 +101,7 @@ namespace GearRent.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UserId,CarId,StartDate,EndDate,Status")] Reservation reservation, bool unpaid)
+        public async Task<IActionResult> Create([Bind("Id,UserId,CarId,StartDate,EndDate,Status")] Reservation reservation,int SelectedBillingInfoId, bool unpaid)
         {
             Car car = await _carService.GetCarAsync(reservation.CarId);
             if (car == null)
@@ -98,13 +109,13 @@ namespace GearRent.Controllers
                 return NotFound();
             }
             reservation.Car = car;
+            reservation.BillingInfoId = SelectedBillingInfoId;
             var value = car.Price * (reservation.EndDate - reservation.StartDate).Days;
             reservation.ReservationValue = value;
             _context.Add(reservation);
             await _context.SaveChangesAsync();
             if (unpaid)
             {
-                Console.WriteLine(reservation.Id+"000000");
                 return RedirectToAction("ThanksEmailUnpaid", "Reservations",new { id = reservation.Id } );
 
             }
