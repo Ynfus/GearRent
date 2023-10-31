@@ -264,3 +264,40 @@ tr {
 .stop-button {
     color: #d72335;
 }
+.custom-select {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+    .custom-select select {
+        width: 100%;
+        padding: 10px;
+        background-color: #f5f5f5;
+        border: none;
+        border-radius: 5px;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        cursor: pointer;
+    }
+
+        .custom-select select:focus {
+            outline: none;
+        }
+
+    .custom-select::before {
+        content: '\25BC';
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        pointer-events: none;
+    }
+
+    .custom-select select option {
+        padding: 10px;
+        background-color: #fff;
+        color: #333;
+    }
+
