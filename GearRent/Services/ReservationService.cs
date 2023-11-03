@@ -39,6 +39,7 @@ namespace GearRent.Services
             var reservation = await _context.Reservations
                 .Include(r => r.Car)
                 .Include(r => r.User)
+                .Include(r=>r.BillingInfo)
                 .FirstAsync(r => r.Id == id);
 
             return reservation;

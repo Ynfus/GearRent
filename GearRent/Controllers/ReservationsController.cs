@@ -184,7 +184,7 @@ namespace GearRent.Controllers
             reservation.Status = ReservationStatus.Approved;
             await _context.SaveChangesAsync();
             bool emailSent = true;
-            var pdf =await BillCreate(2092);
+            var pdf =await BillCreate(reservation.Id);
 
             try
             {
@@ -354,7 +354,7 @@ namespace GearRent.Controllers
         public async Task<byte[]> BillCreate(int reservationId)
         {
 
-            var reservation = await _reservationService.GetReservationByIdAsyncInclude(2091);
+            var reservation = await _reservationService.GetReservationByIdAsyncInclude(reservationId);
             if (reservation == null)
             {
                 return null;
