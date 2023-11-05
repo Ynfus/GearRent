@@ -362,11 +362,14 @@ namespace GearRent.Controllers
             var billModel = new BillModel
             {
                 BillId = reservation.Id,
-                Name = reservation.User.UserName,
+                Name = reservation.BillingInfo.FirstName+reservation.BillingInfo.LastName,
                 CarModel = $"{reservation.Car.Make} {reservation.Car.Model}",
                 Date = DateTime.Now.Date.ToString("d"),
                 TotalValue = reservation.ReservationValue,
-                Days = (int)(reservation.EndDate - reservation.StartDate).TotalDays
+                Days = (int)(reservation.EndDate - reservation.StartDate).TotalDays,
+                Address= reservation.BillingInfo.Street+reservation.BillingInfo.City,
+                PostalCode= reservation.BillingInfo.PostalCode,
+                PhoneNumber = reservation.BillingInfo.PhoneNumber,
             };
             var htmlContent = ViewToString("GenerateBillTemplate", billModel);
             var doc = new HtmlToPdfDocument
