@@ -4,80 +4,105 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<div class="container">
+    <h1 class="mt-4">Create Reservation</h1>
+    <hr />
 
-<h4>Reservation</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form id="reservationForm" asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <input type="text" class="form-control" id="userId" name="userId" value="@Model.UserId" readonly hidden>
-            </div>
-            <div class="form-group">
-                <label asp-for="CarId" for="carId">Car ID:</label>
-                <input asp-for="CarId" type="text" class="form-control" id="carId" name="carId" value="@Model.CarId" readonly>
-            </div>
-            <div class="form-group">
-                <label asp-for="StartDate" class="control-label">Start Date</label>
-                <input asp-for="StartDate" type="date" class="form-control" value="@Model.StartDate" readonly />
-                <span asp-validation-for="StartDate" class="text-danger"></span>
-            </div>
+    <div class="row">
+        <div class="col-md-6">
+            <form id="reservationForm" asp-action="Create">
+                <!-- Informacje o wypożyczeniu -->
+                <div class="form-group">
+                    <input asp-for="UserId" type="hidden" />
+                </div>
 
+                <div class="form-group">
+                    <label asp-for="CarId" class="control-label">Car ID:</label>
+                    <input asp-for="CarId" class="form-control" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="StartDate" class="control-label">Start Date:</label>
+                    <input asp-for="StartDate" class="form-control" readonly />
+                    <span asp-validation-for="StartDate" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="EndDate" class="control-label">End Date:</label>
+                    <input asp-for="EndDate" class="form-control" readonly />
+                    <span asp-validation-for="EndDate" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <button type="button" id="createButton" class="btn btn-primary mt-3">Create Reservation</button>
+                    @if (Model.StartDate != null)
+                    {
+                        DateTime startDate = DateTime.Parse(Model.StartDate);
+                        if (startDate.Date >= DateTime.Now.Date.AddDays(4))
+                        {
+                            <button type="button" id="unpaidButton" class="btn btn-secondary mt-3">Create and Send Unpaid Email</button>
+                        }
+                    }
+                </div>
+            </form>
+        </div>
+
+        <div class="col-md-6">
+            <!-- Opcje wyboru adresu rozliczeniowego -->
             <div class="form-group">
-                <label asp-for="EndDate" class="control-label"></label>
-                <input asp-for="EndDate" type="date" class="form-control" value="@Model.EndDate" readonly />
-                <span asp-validation-for="EndDate" class="text-danger"></span>
-            </div>
-@*            <div class="form-group">
-                <input type="hidden" asp-for="Status" value="@ReservationStatus.Unpaid" readonly />
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>*@
-            <div class="form-group">
-                <input type="hidden" id="unpaid" name="unpaid" value="false" />
-            </div>
-            <div class="container">
-                <h1>Select Billing Information</h1>
+                <label class="control-label">Select Billing Information:</label>
                 @foreach (var billingInfo in Model.BillingInfoOptions)
                 {
                     <div class="card">
-                        <input type="radio" asp-for="SelectedBillingInfoId" value="@billingInfo.Id" id="billing-option-@billingInfo.Id" class="card-input">
+                        <input asp-for="SelectedBillingInfoId" type="radio" value="@billingInfo.Id" id="billing-option-@billingInfo.Id" class="card-input" />
                         <label for="billing-option-@billingInfo.Id" class="card-label">
                             <h3>@($"{billingInfo.FirstName} {billingInfo.LastName}")</h3>
-                            <p>@billingInfo.Street</p>
+                            <p>@billingInfo.Street @billingInfo.PostalCode</p>
+                            <p>@billingInfo.PhoneNumber</p>
                         </label>
                     </div>
                 }
+                <button id="addBillingInfoButton" type="button">Add New Billing Info</button>
+                <div id="addBillingInfoForm" style="display: none;">
+                    <h2>Add Billing Information</h2>
+                    <form id="addBillingInfo" asp-action="AddBillingInfo" method="post">
+                        <div class="form-group">
+                            <label asp-for="NewBillingInfo.FirstName">First Name:</label>
+                            <input asp-for="NewBillingInfo.FirstName" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="NewBillingInfo.LastName">Last Name:</label>
+                            <input asp-for="NewBillingInfo.LastName" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="NewBillingInfo.PhoneNumber">Phone Number:</label>
+                            <input asp-for="NewBillingInfo.PhoneNumber" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="NewBillingInfo.Street">Street:</label>
+                            <input asp-for="NewBillingInfo.Street" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="NewBillingInfo.City">City:</label>
+                            <input asp-for="NewBillingInfo.City" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="NewBillingInfo.PostalCode">Postal Code:</label>
+                            <input asp-for="NewBillingInfo.PostalCode" class="form-control" />
+                        </div>
+
+                        <button type="submit" id="submitBillingInfoButton" class="btn btn-primary">Add Billing Address</button>
+                    </form>
+                </div>
+
+
+
             </div>
-
-
-
-            <div class="form-group">
-                <button type="button" id="createButton" class="btn btn-primary mt-2">Create</button>
-                @if (ViewData["StartDate"] != null)
-                {
-                    string startDateStr = ViewData["StartDate"] as string;
-                    if (!string.IsNullOrEmpty(startDateStr))
-                    {
-                        if (DateTime.TryParse(startDateStr, out DateTime startDate))
-                        {
-                            if (startDate.Date >= DateTime.Now.Date.AddDays(4))
-                            {
-                                <button type="button" id="unpaidButton" class="btn btn-secondary mt-2">Create and Send Unpaid Email</button>
-                            }
-                        }
-                    }
-                }
-            </div>
-
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
 
 @section Scripts {
     @{
@@ -95,4 +120,38 @@
         document.getElementById("unpaid").value = "true";
         document.getElementById("reservationForm").submit();
     });
+    $("#addBillingInfoButton").click(function () {
+        $("#addBillingInfoForm").show();
+    });
+    $("#addBillingInfo").submit(function (e) {
+        e.preventDefault();
+
+        var formData = {
+            FirstName: $("input[name='NewBillingInfo.FirstName']").val(),
+            LastName: $("input[name='NewBillingInfo.LastName']").val(),
+            PhoneNumber: $("input[name='NewBillingInfo.PhoneNumber']").val(),
+            Street: $("input[name='NewBillingInfo.Street']").val(),
+            City: $("input[name='NewBillingInfo.City']").val(),
+            PostalCode: $("input[name='NewBillingInfo.PostalCode']").val()
+        };
+
+        $.ajax({
+            url: "/BillingInfo/AddBillingInfo",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(formData),
+            success: function (response) {
+                if (response.success) {
+                    $("#addBillingInfoForm").hide();
+                    alert(response.message);
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (error) {
+                alert("An error occurred.");
+            }
+        });
+    });
+
 </script>

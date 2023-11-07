@@ -9,5 +9,6 @@
         public int SelectedBillingInfoId { get; set; }
         public ReservationStatus Status { get; set; }
         public List<BillingInfo> BillingInfoOptions { get; set; }
+        public BillingInfo NewBillingInfo { get; set; }
     }
 }
