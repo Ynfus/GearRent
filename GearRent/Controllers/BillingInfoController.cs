@@ -65,15 +65,16 @@ namespace GearRent.Controllers
 
             if (user != null)
             {
+                newBillingInfo.UserId = userId;
                 newBillingInfo.User = user;
-            }
-            if (ModelState.IsValid)
-            {
                 _context.Add(newBillingInfo);
                 await _context.SaveChangesAsync();
 
                 return Json(new { success = true, message = "New billing info added successfully." });
             }
+
+
+            
 
             return Json(new { success = false, message = "Validation failed." });
         }

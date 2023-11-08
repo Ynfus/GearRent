@@ -25,7 +25,7 @@ namespace GearRent.Controllers
         private readonly IConverter _pdfConverter;
 
         public ReservationsController(ApplicationDbContext context, ICustomEmailSender emailSender,
-            IUserService userService, ICarService carService, IReservationService reservationService,IConverter pdfConverter, IBackgroundJobClient backgroundJobClient)
+            IUserService userService, ICarService carService, IReservationService reservationService, IConverter pdfConverter, IBackgroundJobClient backgroundJobClient)
         {
             _context = context;
             _emailSender = emailSender;
@@ -33,7 +33,7 @@ namespace GearRent.Controllers
             _carService = carService;
             _reservationService = reservationService;
             _backgroundJobClient = backgroundJobClient;
-            _pdfConverter= pdfConverter;
+            _pdfConverter = pdfConverter;
         }
 
         public async Task<IActionResult> Index()
@@ -65,15 +65,20 @@ namespace GearRent.Controllers
             {
                 return Redirect("/Identity/Account/Login");
             }
-
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString("startDate")) ||
+        string.IsNullOrEmpty(HttpContext.Session.GetString("endDate")) || (HttpContext.Session.GetInt32("carId"))==null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
             string userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             int carId = HttpContext.Session.GetInt32("carId") ?? 0;
             string startDate = HttpContext.Session.GetString("startDate");
             string endDate = HttpContext.Session.GetString("endDate");
 
-            var billingInfoOptions = _context.BillingInfos
-                .Where(b => b.UserId == userId)
-                .ToList();
+            //to zrobię za pomocą ajaxa
+            //var billingInfoOptions = _context.BillingInfos
+            //    .Where(b => b.UserId == userId)
+            //    .ToList();
 
             var viewModel = new CreateReservationViewModel
             {
@@ -81,7 +86,7 @@ namespace GearRent.Controllers
                 StartDate = startDate,
                 EndDate = endDate,
                 UserId = userId,
-                BillingInfoOptions = billingInfoOptions
+                //BillingInfoOptions = billingInfoOptions
             };
 
             HttpContext.Session.Remove("carId");
@@ -101,7 +106,7 @@ namespace GearRent.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UserId,CarId,StartDate,EndDate,Status")] Reservation reservation,int SelectedBillingInfoId, bool unpaid)
+        public async Task<IActionResult> Create([Bind("Id,UserId,CarId,StartDate,EndDate,Status")] Reservation reservation, int SelectedBillingInfoId, bool unpaid)
         {
             Car car = await _carService.GetCarAsync(reservation.CarId);
             if (car == null)
@@ -116,12 +121,12 @@ namespace GearRent.Controllers
             await _context.SaveChangesAsync();
             if (unpaid)
             {
-                return RedirectToAction("ThanksEmailUnpaid", "Reservations",new { id = reservation.Id } );
+                return RedirectToAction("ThanksEmailUnpaid", "Reservations", new { id = reservation.Id });
 
             }
             else
             {
-                return RedirectToAction(nameof(Checkout), new { id=reservation.Id });
+                return RedirectToAction(nameof(Checkout), new { id = reservation.Id });
 
             }
         }
@@ -184,7 +189,7 @@ namespace GearRent.Controllers
             reservation.Status = ReservationStatus.Approved;
             await _context.SaveChangesAsync();
             bool emailSent = true;
-            var pdf =await BillCreate(reservation.Id);
+            var pdf = await BillCreate(reservation.Id);
 
             try
             {
@@ -306,7 +311,7 @@ namespace GearRent.Controllers
                         state = "zakończona";
                         break;
                     default:
-                        return StatusCode(400); 
+                        return StatusCode(400);
                 }
 
                 try
@@ -362,13 +367,13 @@ namespace GearRent.Controllers
             var billModel = new BillModel
             {
                 BillId = reservation.Id,
-                Name = reservation.BillingInfo.FirstName+reservation.BillingInfo.LastName,
+                Name = reservation.BillingInfo.FirstName + reservation.BillingInfo.LastName,
                 CarModel = $"{reservation.Car.Make} {reservation.Car.Model}",
                 Date = DateTime.Now.Date.ToString("d"),
                 TotalValue = reservation.ReservationValue,
                 Days = (int)(reservation.EndDate - reservation.StartDate).TotalDays,
-                Address= reservation.BillingInfo.Street+reservation.BillingInfo.City,
-                PostalCode= reservation.BillingInfo.PostalCode,
+                Address = reservation.BillingInfo.Street + reservation.BillingInfo.City,
+                PostalCode = reservation.BillingInfo.PostalCode,
                 PhoneNumber = reservation.BillingInfo.PhoneNumber,
             };
             var htmlContent = ViewToString("GenerateBillTemplate", billModel);
