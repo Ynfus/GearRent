@@ -1,0 +1,18 @@
+﻿@model CreateReservationViewModel
+@{
+    var firstBillingInfo = Model.BillingInfoOptions.FirstOrDefault();
+}
+
+@foreach (var billingInfo in Model.BillingInfoOptions)
+{
+    <div class="card">
+        <input asp-for="SelectedBillingInfoId" type="radio" value="@billingInfo.Id" id="billing-option-@billingInfo.Id" class="card-input"
+           checked="@(billingInfo == firstBillingInfo)" />
+        <label for="billing-option-@billingInfo.Id" class="card-label">
+            <h3>@($"{billingInfo.FirstName} {billingInfo.LastName}")</h3>
+            <p>@billingInfo.Street @billingInfo.PostalCode</p>
+            <p>@billingInfo.PhoneNumber</p>
+        </label>
+    </div>
+}
+
