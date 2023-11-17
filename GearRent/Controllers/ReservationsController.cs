@@ -86,6 +86,7 @@ namespace GearRent.Controllers
                 StartDate = startDate,
                 EndDate = endDate,
                 UserId = userId,
+                SelectedBillingInfoId = 1,
                 //BillingInfoOptions = billingInfoOptions
             };
 
@@ -106,7 +107,7 @@ namespace GearRent.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UserId,CarId,StartDate,EndDate,Status")] Reservation reservation, int SelectedBillingInfoId, bool unpaid)
+        public async Task<IActionResult> Create([Bind("Id,UserId,CarId,StartDate,EndDate,Status")] Reservation reservation, int selectedBillingInfo, bool unpaid)
         {
             Car car = await _carService.GetCarAsync(reservation.CarId);
             if (car == null)
@@ -114,7 +115,7 @@ namespace GearRent.Controllers
                 return NotFound();
             }
             reservation.Car = car;
-            reservation.BillingInfoId = SelectedBillingInfoId;
+            reservation.BillingInfoId = selectedBillingInfo;
             var value = car.Price * (reservation.EndDate - reservation.StartDate).Days;
             reservation.ReservationValue = value;
             _context.Add(reservation);

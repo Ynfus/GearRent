@@ -20,6 +20,8 @@
                     <label asp-for="CarId" class="control-label">Car ID:</label>
                     <input asp-for="CarId" class="form-control" readonly />
                 </div>
+                <input type="hidden" id="unpaid" name="Unpaid" value="false" />
+                <input type="hidden" id="selectedBillingInfo" name="selectedBillingInfo" />
 
                 <div class="form-group">
                     <label asp-for="StartDate" class="control-label">Start Date:</label>
@@ -51,17 +53,8 @@
             <!-- Opcje wyboru adresu rozliczeniowego -->
             <div class="form-group">
                 <label class="control-label">Select Billing Information:</label>
-                @foreach (var billingInfo in Model.BillingInfoOptions)
-                {
-                    <div class="card">
-                        <input asp-for="SelectedBillingInfoId" type="radio" value="@billingInfo.Id" id="billing-option-@billingInfo.Id" class="card-input" />
-                        <label for="billing-option-@billingInfo.Id" class="card-label">
-                            <h3>@($"{billingInfo.FirstName} {billingInfo.LastName}")</h3>
-                            <p>@billingInfo.Street @billingInfo.PostalCode</p>
-                            <p>@billingInfo.PhoneNumber</p>
-                        </label>
-                    </div>
-                }
+                <div id="existingBillingInfo">
+                </div>
                 <button id="addBillingInfoButton" type="button">Add New Billing Info</button>
                 <div id="addBillingInfoForm" style="display: none;">
                     <h2>Add Billing Information</h2>
@@ -120,9 +113,11 @@
         document.getElementById("unpaid").value = "true";
         document.getElementById("reservationForm").submit();
     });
+
     $("#addBillingInfoButton").click(function () {
         $("#addBillingInfoForm").show();
     });
+
     $("#addBillingInfo").submit(function (e) {
         e.preventDefault();
 
@@ -144,6 +139,7 @@
                 if (response.success) {
                     $("#addBillingInfoForm").hide();
                     alert(response.message);
+                    loadBillingAddresses();
                 } else {
                     alert(response.message);
                 }
@@ -153,5 +149,32 @@
             }
         });
     });
+
+    function loadBillingAddresses() {
+        $.ajax({
+            url: "/BillingInfo/GetBillingAddresses",
+            type: "GET",
+            success: function (html) {
+            $("#existingBillingInfo").empty();
+            $("#existingBillingInfo").html(html);
+                updateSelectedBillingInfo();
+            var selectedValue = $('input[name="SelectedBillingInfoId"]:checked').val();
+            $('#selectedBillingInfo').val(selectedValue);
+            },
+            error: function (error) {
+                alert("An error occurred while fetching billing addresses.");
+            }
+        });
+    };
+
+    loadBillingAddresses();
+
+    function updateSelectedBillingInfo() {
+        $('input[name="SelectedBillingInfoId"]').change(function () {
+            var selectedValue = $('input[name="SelectedBillingInfoId"]:checked').val();
+            $('#selectedBillingInfo').val(selectedValue);
+        });
+    }
+
 
 </script>

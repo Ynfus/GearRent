@@ -78,6 +78,26 @@ namespace GearRent.Controllers
 
             return Json(new { success = false, message = "Validation failed." });
         }
+        [HttpGet]
+        public IActionResult GetBillingAddresses()
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return BadRequest("User not authenticated");
+            }
+
+            string userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            var billingInfoOptions = _context.BillingInfos
+                .Where(b => b.UserId == userId)
+                .ToList();
+
+           var viewModel = new CreateReservationViewModel
+           {
+               BillingInfoOptions = billingInfoOptions
+           };
+            return PartialView("_BillingInfoReservationPartialView", viewModel);
+        }
 
         // POST: BillingInfo/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
