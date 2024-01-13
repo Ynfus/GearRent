@@ -9,6 +9,7 @@ namespace GearRent.Services
     {
         Task SendEmailWithAttachmentAsync(string toEmail, string subject, string message, byte[] attachmentBytes, string attachmentFileName);
         Task SendEmailAsync(string toEmail, string subject, string message);
+        Task SendEmailAsyncInside(string subject, string message);
     }
     public class CustomEmailSender : ICustomEmailSender
     {
@@ -97,7 +98,7 @@ namespace GearRent.Services
                 throw;
             }
         }
-        public static async Task SendEmailAsync1(string toEmail, string subject, string message)
+        public async Task SendEmailAsyncInside(string subject, string message)
         {
             try
             {
@@ -106,34 +107,25 @@ namespace GearRent.Services
                     //smtpClient.EnableSsl = true;
                     smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
                     smtpClient.UseDefaultCredentials = true;
-                    string fullMessage = "Witaj!\n\n";
+                    string fullMessage = "Wiadomość wewnętrzna!\n\n";
                     fullMessage += message;
-                    fullMessage += "\n\nDziękujemy za korzystanie z naszych usług!\n";
-                    fullMessage += "Pozdrawiamy,\nZespół GearRent";
-                    fullMessage += "\n\n\nDane kontaktowe:\n";
-                    fullMessage += "ul. Półwiejska 42, 61-888 Poznań\n";
-                    fullMessage += "+48 123 456 789\n";
-                    fullMessage += "kontakt@gearrent.pl\n\n";
-                    fullMessage += "Godziny otwarcia:\n";
-                    fullMessage += "Poniedziałek - piątek: 8:00 - 20:00\n";
-                    fullMessage += "Sobota: 9:00 - 18:00\n";
-                    fullMessage += "Niedziela: nieczynne";
                     MailMessage mailMessage = new MailMessage();
                     mailMessage.From = new MailAddress("sender@example.com");
-                    mailMessage.To.Add(new MailAddress(toEmail));
+                    mailMessage.To.Add(new MailAddress("notifications@example.com"));
                     mailMessage.Subject = subject;
                     mailMessage.Body = fullMessage;
 
                     await smtpClient.SendMailAsync(mailMessage);
 
-                    //Logger.LogInformation($"Email sent successfully to {toEmail}");
+                    _logger.LogInformation($"Email sent successfully to notifications");
                 }
             }
             catch (Exception ex)
             {
-               // _logger.LogError(ex, $"Failed to send email to {toEmail}");
+                _logger.LogError(ex, $"Failed to send email to notifications@example.com");
                 throw;
             }
+
         }
     }
 }

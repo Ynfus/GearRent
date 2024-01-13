@@ -62,11 +62,18 @@ namespace GearRent.Controllers
         [HttpPost]
         public ActionResult Complaint(ComplaintViewModel complaintViewModel)
          {
-            _emailSender.SendEmailAsync(complaintViewModel.Email, "Wiadomość z formularza reklamacyjnego zamówienia nr: " + complaintViewModel.ReservationNumber + "  " + DateTime.Now.ToString(),
-                complaintViewModel.ComplaintDescription + "\n\nZłozone przez: " + complaintViewModel.FullName + "\nNumer kontaktowy: " + complaintViewModel.Phone);
-            TempData["messageSent"] = true;
+            if (ModelState.IsValid)
+            {
+                _emailSender.SendEmailAsyncInside("Wiadomość z formularza reklamacyjnego zamówienia nr: " + complaintViewModel.ReservationNumber + "  " + DateTime.Now.ToString(),
+                    complaintViewModel.ComplaintDescription + "\n\nZłozone przez: " + complaintViewModel.FullName + "\nNumer kontaktowy: " + complaintViewModel.Phone);
+                _emailSender.SendEmailAsync(complaintViewModel.Email, "Wiadomość z formularza reklamacyjnego zamówienia nr: " + complaintViewModel.ReservationNumber + "  " + DateTime.Now.ToString(), "Dziekujemy za złożenie reklamacji.\nOdpowiemy na nia tak szybko jak to możliwe.");
+                TempData["messageSent"] = true;
 
-            return RedirectToAction("Complaint");
+                return RedirectToAction("Complaint");
+            }
+
+            return View(complaintViewModel);
+
         }
     }
 }
